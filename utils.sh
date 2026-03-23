@@ -25,3 +25,17 @@ convert_path_if_needed() {
     echo "$path"
   fi
 }
+
+make_directory_link() {
+  local actual=$1
+  local link=$2
+  if ! is_windows; then
+    ln -s "$actual" "$link"
+  else
+    link=$(convert_path_if_needed --windows "$link")
+    actual=$(convert_path_if_needed --windows "$actual")
+    command="cmd /C'mklink /j ""$link"" ""$actual""'"
+    printf 'mklink: '
+    eval "$command"
+  fi
+}

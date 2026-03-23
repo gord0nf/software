@@ -20,6 +20,7 @@ for nvim_dir in "${default_nvim_dirs[@]}"; do
       link=$(convert_path_if_needed --windows "$nvim_dir")
       actual=$(convert_path_if_needed --windows "$config_dir")
       command="cmd /C'mklink /j ""$link"" ""$actual""'"
+      printf 'mklink: '
       eval "$command"
     fi
   fi

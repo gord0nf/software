@@ -6,6 +6,7 @@
 # be linked by the thing's setup script.
 
 SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+UTILS_SCRIPT="$SOFTWARE_ROOT/setup/utils.sh"
 
 if (($# != 1)); then
   echo 'usage: setup.sh <thing>'
@@ -22,4 +23,4 @@ if ! [[ -f "$thing_setup_script" ]]; then
 fi
 
 echo "[software] Running setup for '$thing'"
-eval "$thing_setup_script" "$thing_config"
+eval "$thing_setup_script" "$thing_config" "$UTILS_SCRIPT"

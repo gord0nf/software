@@ -1,34 +1,12 @@
 #!/bin/bash
 
 config_dir=$1
+utils=$2
 
-# utils
-
-command_exists() {
-  local command=$1
-  if command -v $command &>/dev/null; then
-    return 0
-  fi
-  return 1
-}
-convert_unix_path() {
-  local path=$1
-  local switch='--windows'
-  if [[ $2 == '--to' ]]; then arg='--unix'; fi
-
-  if command_exists wslpath; then
-    echo "$(wslpath $switch "$path")"
-  elif command_exists cygpath; then
-    echo "$(cygpath $switch "$path")"
-  else
-    echo "$path"
-  fi
-}
-
-# logic
+. "$utils"
 
 flavors=()
-if grep -qEi "(Microsoft|WSL|MSYS)" /proc/version &>/dev/null; then
+if is_windows; then
   if ! command_exists powershell; then
     echo "uh, you're on Windows and don't have powershell. that ain't right..."
     exit 1
@@ -44,12 +22,12 @@ if ((${#flavors[@]} == 0)); then
 fi
 
 for powershell in "${flavors[@]}"; do
-  profile=$(convert_unix_path "$(eval "$powershell -Command 'Write-Host \$PROFILE'")" --to)
+  profile=$(convert_path_if_needed --unix "$(eval "$powershell -Command 'Write-Host \$PROFILE'")")
   if ! [[ -f "$profile" ]]; then
     echo "PS profile file doesn't exist: $profile"
     exit 1
   fi
 
   echo "[powershell] making sure '$profile' sources config"
-  echo ". '$(convert_unix_path "$config_dir/PowerShell_profile.ps1")'" >>"$profile"
+  echo ". '$(convert_path_if_needed --windows "$config_dir/PowerShell_profile.ps1")'" >>"$profile"
 done

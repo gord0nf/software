@@ -70,7 +70,8 @@ Push-ToPath @(
     "$env:SOFTWARE\nodejs",             # NodeJS
     "$env:SOFTWARE\neovim\bin",		      # NeoVim
     "$env:SOFTWARE\sublime_merge",      # Sublime Merge
-    "$env:SOFTWARE\github-cli\bin"      # GitHub cli
+    "$env:SOFTWARE\github-cli\bin",     # GitHub cli
+    "$env:SOFTWARE\ffmpeg\bin"          # FFmpeg
 )
 
 # Git should be first to prioritize Unix tools

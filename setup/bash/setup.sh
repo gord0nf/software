@@ -6,4 +6,5 @@ config_dir=$1
 
 # set ~/.basrc to source $config_dir/.bashrc
 echo "[bash] making sure ~/.bashrc sources config"
-echo ". '$config_dir/.bashrc'" >>~/.bashrc
+sed -i '/#@gord0nf\/software/d' ~/.bashrc &>/dev/null # clean all lines with special comment
+echo ". '$config_dir/.bashrc' #@gord0nf/software" >>~/.bashrc

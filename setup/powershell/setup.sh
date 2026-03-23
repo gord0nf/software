@@ -22,12 +22,13 @@ if ((${#flavors[@]} == 0)); then
 fi
 
 for powershell in "${flavors[@]}"; do
-  profile=$(convert_path_if_needed --unix "$(eval "$powershell -Command 'Write-Host \$PROFILE'")")
+  profile=$(convert_path_if_needed --unix "$(eval "$powershell -NoProfile -Command 'Write-Host \$PROFILE'")")
   if ! [[ -f "$profile" ]]; then
     echo "PS profile file doesn't exist: $profile"
     exit 1
   fi
 
   echo "[powershell] making sure '$profile' sources config"
-  echo ". '$(convert_path_if_needed --windows "$config_dir/PowerShell_profile.ps1")'" >>"$profile"
+  sed -i '/#@gord0nf\/software/d' "$profile" &>/dev/null # clean all lines with special comment
+  echo ". '$(convert_path_if_needed --windows "$config_dir/PowerShell_profile.ps1")' #@gord0nf/software" >>"$profile"
 done

@@ -1,3 +1,11 @@
+# core stuff
+installed/
+software.csv
+
+# neovim
 **/lazy-lock.json
 **/lazyvim.json
+
+# winterm
 config/winterm/state.json
+

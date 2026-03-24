@@ -1,7 +1,7 @@
 #!/bin/bash
 
 config_dir=$1
-utils=$2
+utils=$3
 
 . "$utils"
 

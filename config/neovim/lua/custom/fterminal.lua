@@ -126,17 +126,17 @@ end
 
 FTerminal.keymaps = {
   ['t'] = {
-    ['<C-w>'] = {
+    ['<Esc><Esc>'] = {
       func = FTerminal.hide,
       desc = 'Close floating terminal from terminal',
     },
   },
   ['n'] = {
-    ['<C-w>'] = {
+    ['<Esc><Esc>'] = {
       func = FTerminal.hide,
       desc = 'Close floating terminal from terminal normal mode',
     },
-    ['bd'] = {
+    ['<leader>bd'] = {
       func = FTerminal.delete,
       desc = 'Force delete terminal buffer',
     },

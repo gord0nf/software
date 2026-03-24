@@ -1,5 +1,9 @@
 let g:mapleader=" "
 
+" Alernative exit insert mode
+inoremap jk <Esc>
+inoremap kj <Esc>
+
 " Yank entire line
 nmap Y y$
 

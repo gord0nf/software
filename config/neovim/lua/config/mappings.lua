@@ -120,7 +120,7 @@ vim.keymap.set('t', '<C-l>', '<c-\\><C-n><C-w>l', { desc = 'Move to right window
 
 -- Insert mode in terminal buffer
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { desc = 'Normal mode from terminal mode' })
-vim.keymap.set('t', '<Esc><Esc>', '<Esc>', { noremap = true, silent = true, desc = 'Normal mode from terminal mode' })
+vim.keymap.set('t', '<Esc><Esc><Esc>', '<Esc>', { noremap = true, silent = true, desc = 'Esc within terminal mode' })
 
 -- Floating terminal
 local FTermnial = require('custom.fterminal')

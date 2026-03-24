@@ -79,6 +79,7 @@ return {
     css = { 'prettierd' },
     json = { 'prettierd' },
     html = { 'prettierd' },
+    markdown = { 'prettierd' },
   },
 
   linters_by_ft = {

@@ -180,3 +180,9 @@ if (Test-Binary msys2) {
         OPENSSL_INCLUDE_DIR    = "$env:SOFTWARE\openssl\include"
     }
 }
+
+# Cool command prompt -----------------------------------------------------------------------------
+
+$OMPConfig = "$PSScriptRoot\..\ohmyposh\config.json"
+if (!(Test-Path "$OMPConfig")) { $OMPConfig = 'takuya' }
+oh-my-posh init pwsh --config "$OMPConfig" | Invoke-Expression

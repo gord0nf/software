@@ -35,7 +35,6 @@ function Set-EnvironmentVars() {
     }
 }
 
-
 # Custom env variables ----------------------------------------------------------------------------
 
 $PROFILE = $PSCommandPath
@@ -115,6 +114,17 @@ function Get-WebBrowserDirectories() {
     return $BrowserLocations
 }
 Push-ToPath (Get-WebBrowserDirectories)
+
+# Register to path from software.csv
+
+$SoftwareCsv = "$PSScriptRoot\..\..\software.csv"
+if (Test-Path "$SoftwareCsv") {
+  $paths = @()
+   Import-Csv "$SoftwareCsv" | ForEach-Object {
+     $paths += $_.paths -split '\|'
+   }
+   Push-ToPath $paths
+}
 
 # Custom functions and aliases -------------------------------------------------------------------- 	
 	

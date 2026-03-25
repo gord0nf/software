@@ -7,7 +7,7 @@ utils=$3
 
 if ! command_exists bash; then
   echo "no bash installation found. but you're supposed to be running this with bash..."
-  if is_windows; then
+  if [[ $(get_os) == "windows" ]]; then
     echo 'the quickest solution for Windows is to install Git, which installs Git Bash'
   fi
   exit 1

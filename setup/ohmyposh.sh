@@ -9,7 +9,7 @@ register=$4
 
 if ! command_exists oh-my-posh; then
   echo "[ohmyposh] running install script"
-  if is_windows; then
+  if [[ $(get_os) == 'windows' ]]; then
     if ! command_exists powershell; then
       echo 'no powershell and ur on windows? that aint right'
       exit 1

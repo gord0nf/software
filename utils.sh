@@ -1,8 +1,16 @@
-is_windows() {
+# returns 'windows' | 'linux' | 'mac'
+get_os() {
   if grep -qEi "(Microsoft|WSL|MSYS)" /proc/version &>/dev/null; then
-    return 0
+    echo 'windows'
+  elif [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "freebsd"*]]; then
+    echo 'linux'
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    echo 'mac'
+  elif [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+    echo 'windows'
   else
-    return 1
+    echo 'could not determine os. please define $OSTYPE' >&2
+    exit 1
   fi
 }
 
@@ -29,7 +37,7 @@ convert_path_if_needed() {
 make_directory_link() {
   local actual=$1
   local link=$2
-  if ! is_windows; then
+  if [[ $(get_os) != 'windows' ]]; then
     ln -s "$actual" "$link"
   else
     link=$(convert_path_if_needed --windows "$link")

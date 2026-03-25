@@ -6,7 +6,7 @@ utils=$3
 . "$utils"
 
 flavors=()
-if is_windows; then
+if [[ $(get_os) == 'windows' ]]; then
   if ! command_exists powershell; then
     echo "uh, you're on Windows and don't have powershell. that ain't right..."
     exit 1

@@ -1,8 +1,17 @@
 #!/bin/bash
 
 config_dir=$1
+utils=$3
 
-# well, you're supposedly running this with bash... so that should be setup already.
+. "$utils"
+
+if ! command_exists bash; then
+  echo "no bash installation found. but you're supposed to be running this with bash..."
+  if is_windows; then
+    echo 'the quickest solution for Windows is to install Git, which installs Git Bash'
+  fi
+  exit 1
+fi
 
 # set ~/basrc to source $config_dir/profile.sh
 echo "[bash] making sure ~/.bashrc sources config"

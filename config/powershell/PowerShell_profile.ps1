@@ -73,13 +73,6 @@ Push-ToPath @(
     "$env:SOFTWARE\ffmpeg\bin"          # FFmpeg
 )
 
-# Git should be first to prioritize Unix tools
-Push-ToPath -AtStart @(
-    "$env:SOFTWARE\git\cmd",
-    "$env:SOFTWARE\git\mingw64\bin",
-    "$env:SOFTWARE\git\usr\bin"
-)
-
 function Get-WebBrowserDirectories() {
     [OutputType([string[]])]
     param ()

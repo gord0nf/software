@@ -48,6 +48,7 @@ return {
       keys = {
         o = 'jump',
         ['<cr>'] = 'jump_close',
+        ['<esc>'] = 'jump_close',
       },
     },
     cmd = 'Trouble',

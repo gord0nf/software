@@ -2,7 +2,7 @@
 get_os() {
   if grep -qEi "(Microsoft|WSL|MSYS)" /proc/version &>/dev/null; then
     echo 'windows'
-  elif [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "freebsd"*]]; then
+  elif [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "freebsd"* ]]; then
     echo 'linux'
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     echo 'mac'
@@ -12,6 +12,25 @@ get_os() {
     echo 'could not determine os. please define $OSTYPE' >&2
     exit 1
   fi
+}
+
+# returns 'amd/x64' | 'x32' | 'arm'
+get_arch() {
+  archs=($(uname -m) $(arch))
+  for arch in "${archs[@]}"; do
+    if [[ $arch == x86_64* ]]; then
+      echo 'amd/x64'
+    elif [[ $arch == i*86 ]]; then
+      echo 'x32'
+    elif [[ $arch == arm* ]]; then
+      echo 'arm'
+    else
+      continue
+    fi
+    return
+  done
+  echo 'could not determine sys architecture' >&2
+  exit 1
 }
 
 command_exists() {

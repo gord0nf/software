@@ -62,7 +62,6 @@ Push-ToPath @(
     "$env:SOFTWARE\lazygit",            # Lazygit
     "$env:SOFTWARE\ripgrep",            # Ripgrep (for telescope, usually)
     "$env:SOFTWARE\msys2"               # MSYS2 / Mingw
-    "$env:SOFTWARE\jdk\bin",            # Oracle JDK
     "$env:SOFTWARE\make\bin",		        # Gnu Make
     "$env:SOFTWARE\apache-maven\bin",   # Apache Maven
     "$env:SOFTWARE\gradle\bin",         # Gradle
@@ -155,12 +154,6 @@ foreach ($editor in $PreferredEditors) {
 }
 if ($env:EDITOR -like 'code*') {
     $env:EDITOR += " --wait"
-}
-
-# Java --------------------------------------------------------------------------------------------
-
-if (Test-Binary java) {
-    $env:JAVA_HOME = "$env:SOFTWARE\jdk"
 }
 
 # MSYS2/Mingw -------------------------------------------------------------------------------------

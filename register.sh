@@ -7,6 +7,7 @@
 thing=$1
 version=$2
 shift
+shift
 bin_paths=("$@")
 
 SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"

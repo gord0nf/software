@@ -19,5 +19,5 @@ if ! command_exists oh-my-posh; then
     curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$install_dir"
   fi
 
-  bash "$register" 'ohmyposh' "$install_dir"
+  bash "$register" 'ohmyposh' '' "$install_dir" # Empty version 'cause it's not really that important
 fi

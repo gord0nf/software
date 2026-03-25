@@ -1,9 +1,11 @@
 #!/bin/bash
 
 # registers a software thing in software.csv.
+# usage: ./register.sh <thing> <version> ...bin_paths
 # note: $thing could contain chars that sed recognizes, which would mess it all up
 
 thing=$1
+version=$2
 shift
 bin_paths=("$@")
 
@@ -13,7 +15,7 @@ SOFTWARE_CSV="$SOFTWARE_ROOT/software.csv"
 . "$SOFTWARE_ROOT/utils.sh"
 
 if ! [[ -f "$SOFTWARE_CSV" ]]; then
-  echo 'software,paths' >"$SOFTWARE_CSV"
+  echo 'software,version,paths' >"$SOFTWARE_CSV"
 fi
 
 # remove existing registration(s)
@@ -28,4 +30,4 @@ if [[ "$bin_paths_arr" != '' ]]; then
 fi
 
 echo "[register] registering $thing"
-echo "$thing,$bin_paths_arr" >>"$SOFTWARE_CSV"
+echo "$thing,$version,$bin_paths_arr" >>"$SOFTWARE_CSV"

@@ -8,7 +8,7 @@
 --  - formatters_by_ft: Table of { ft: formatters } for Conform
 --  - linters_by_ft:    Table of { ft: linters } for nvim-lint
 
-ENABLED_LANGS = { 'default', 'lua', 'js', 'go' } -- must be a name in the plugins/lsp/ dir
+ENABLED_LANGS = { 'default', 'lua', 'js', 'go', 'java' } -- must be a name in the plugins/lsp/ dir
 
 local merge_tables = require('utils').merge_tables
 local concat_tables = require('utils').concat_tables

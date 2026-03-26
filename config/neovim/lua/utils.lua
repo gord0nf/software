@@ -15,4 +15,27 @@ return {
       a1[#a1 + 1] = v
     end
   end,
+  list_subdirs = function(dir)
+    local subdirs = {}
+    local entries = vim.fn.readdir(dir)
+
+    if entries then
+      for _, entry in pairs(entries) do
+        local full_path = vim.fs.joinpath(dir, entry)
+        if vim.fn.isdirectory(full_path) == 1 then
+          table.insert(subdirs, entry)
+        end
+      end
+    end
+
+    return subdirs
+  end,
+  index_of = function(a, target)
+    for idx, value in ipairs(a) do
+      if value == target then
+        return idx
+      end
+    end
+    return -1
+  end,
 }

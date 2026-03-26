@@ -75,10 +75,17 @@ vim.diagnostic.config({ virtual_text = true })
 
 -- Shells, don'tcha know?
 local shell = os.getenv('SHELL')
-if not shell or shell == '' then
-  local is_windows = function()
-    return package.config:sub(1, 1) == '\\'
+if not shell or vim.opt.shell == '' then
+  if vim.fn.executable('pwsh') then
+    shell = 'pwsh'
+  elseif package.config:sub(1, 1) == '\\' then -- Is windows
+    shell = 'powershell'
+  else
+    shell = 'bash'
   end
-  shell = is_windows() and 'powershell.exe' or 'bash'
+end
+if string.match(shell, 'powershell') or string.match(shell, 'pwsh') then
+  vim.opt.shellcmdflag = '-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command'
+  vim.opt.shellxquote = ''
 end
 vim.opt.shell = shell

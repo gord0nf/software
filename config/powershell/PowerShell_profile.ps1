@@ -121,6 +121,12 @@ if (Test-Path "$SoftwareCsv") {
 # Custom functions and aliases -------------------------------------------------------------------- 	
 	
 function List-All() { Get-ChildItem -Force @args } 	
+function Invoke-BasicWebRequest() { 
+  $save = $ProgressPreference
+  $ProgressPreference = 'SilentlyContinue' 
+  Invoke-WebRequest -UseBasicParsing @args
+  $ProgressPreference = $save
+}
 function Get-DirectorySize() {
     param ( [string]$Directory )
     return (Get-ChildItem -Path "$Direcotry" -Recurse -File -Force | Measure-Object -Property Length -Sum).Sum
@@ -135,11 +141,18 @@ function Expand-Cab() {
     param( [string]$Path, [string]$Destination ) 	
     expand.exe -F:* "$Path" "$Destination" 	
 } 	
+
+function Invoke-WebRequestToFile() {
+  param ( [string]$Uri )
+  Invoke-BasicWebRequest -Uri "$Uri" -O "$PWD\$([System.IO.Path]::GetFileName($Uri))" @args
+}
 	
 Set-Alias l List-All 	
 Set-Alias zip Compress-Archive 	
 Set-Alias unzip Expand-Archive
 Set-Alias ffox firefox
+Set-Alias -Option AllScope curl Invoke-BasicWebRequest
+Set-Alias -Option AllScope wget Invoke-WebRequestToFile
 
 # Editors -----------------------------------------------------------------------------------------
 

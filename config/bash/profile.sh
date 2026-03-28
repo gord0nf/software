@@ -21,3 +21,7 @@ prettypath() { echo "${PATH//:/$'\n'}"; }
 if command_exists oh-my-posh; then
   eval "$(oh-my-posh init bash --config 'half-life')"
 fi
+
+### If in git bash on windows, prefer unix tools ----------
+winpath_pattern='\/[a-zA-Z]\/[Ww]indows.*'
+export PATH=$(deprioritize_paths "$winpath_pattern" "$PATH")

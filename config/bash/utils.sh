@@ -21,3 +21,14 @@ command_exists() {
   fi
   return 1
 }
+
+deprioritize_paths() {
+  local pattern=$1
+  local pathlines="${2//:/$'\n'}"
+  pathlines=$(
+    echo -n "$pathlines" |
+      awk "/$pattern/{buf = buf \$0 RS;next} {print} END{printf \"%s\",buf}"
+  )
+  # echo "$pathlines"
+  echo "${pathlines//$'\n'/:}"
+}

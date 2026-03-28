@@ -120,17 +120,21 @@ Push-ToPath (Get-WebBrowserDirectories)
 
 # Custom functions and aliases -------------------------------------------------------------------- 	
 	
-function List-All() { Get-ChildItem -Force @args } 	
+function Get-AllChildItems() { Get-ChildItem -Force @args } 	
 function Invoke-BasicWebRequest() { 
   $save = $ProgressPreference
   $ProgressPreference = 'SilentlyContinue' 
   Invoke-WebRequest -UseBasicParsing @args
   $ProgressPreference = $save
 }
+function Invoke-WebRequestToFile() {
+  param ( [string]$Uri )
+  Invoke-BasicWebRequest -Uri "$Uri" -O "$PWD\$([System.IO.Path]::GetFileName($Uri))" @args
+}
 function Get-DirectorySize() {
-    param ( [string]$Directory )
-    return (Get-ChildItem -Path "$Direcotry" -Recurse -File -Force | Measure-Object -Property Length -Sum).Sum
-  }
+    param ( [string]$Path )
+    return (Get-ChildItem -Path "$Path" -Recurse -File -Force | Measure-Object -Property Length -Sum).Sum
+}
 function Expand-Msi() { 	
     param ( [string]$Path, [string]$Destination ) 	
     $msiFull = (Get-Item $Path).FullName 	
@@ -141,13 +145,8 @@ function Expand-Cab() {
     param( [string]$Path, [string]$Destination ) 	
     expand.exe -F:* "$Path" "$Destination" 	
 } 	
-
-function Invoke-WebRequestToFile() {
-  param ( [string]$Uri )
-  Invoke-BasicWebRequest -Uri "$Uri" -O "$PWD\$([System.IO.Path]::GetFileName($Uri))" @args
-}
 	
-Set-Alias l List-All 	
+Set-Alias l Get-AllChildItems
 Set-Alias zip Compress-Archive 	
 Set-Alias unzip Expand-Archive
 Set-Alias ffox firefox

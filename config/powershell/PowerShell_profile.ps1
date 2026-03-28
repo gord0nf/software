@@ -51,6 +51,17 @@ $SHELL = $env:SHELL
 
 # PATH --------------------------------------------------------------------------------------------
 
+# Register to path from software.csv
+
+$SoftwareCsv = "$PSScriptRoot\..\..\software.csv"
+if (Test-Path "$SoftwareCsv") {
+  $paths = @()
+   Import-Csv "$SoftwareCsv" | ForEach-Object {
+     $paths += $_.paths -split '\|'
+   }
+   Push-ToPath $paths
+}
+
 # Software Paths 
 Push-ToPath @(
     "C:\Windows\Microsoft.NET\Framework\v4.0.30319\",           # DOTNET C#
@@ -106,17 +117,6 @@ function Get-WebBrowserDirectories() {
     return $BrowserLocations
 }
 Push-ToPath (Get-WebBrowserDirectories)
-
-# Register to path from software.csv
-
-$SoftwareCsv = "$PSScriptRoot\..\..\software.csv"
-if (Test-Path "$SoftwareCsv") {
-  $paths = @()
-   Import-Csv "$SoftwareCsv" | ForEach-Object {
-     $paths += $_.paths -split '\|'
-   }
-   Push-ToPath $paths
-}
 
 # Custom functions and aliases -------------------------------------------------------------------- 	
 	

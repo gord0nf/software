@@ -135,6 +135,12 @@ function Get-DirectorySize() {
     param ( [string]$Path )
     return (Get-ChildItem -Path "$Path" -Recurse -File -Force | Measure-Object -Property Length -Sum).Sum
 }
+function New-Junction() {
+    param ( [string]$Path, [string]$Junction )
+    $Path = Resolve-Path "$Path"
+    $Junction = [System.IO.Path]::GetFullPath((Join-Path $pwd.Path $Junction))
+    cmd.exe /C "mklink /J ""$Junction"" ""$Path"""
+}
 function Expand-Msi() { 	
     param ( [string]$Path, [string]$Destination ) 	
     $msiFull = (Get-Item $Path).FullName 	

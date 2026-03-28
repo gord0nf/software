@@ -121,6 +121,10 @@ Push-ToPath (Get-WebBrowserDirectories)
 # Custom functions and aliases -------------------------------------------------------------------- 	
 	
 function Get-AllChildItems() { Get-ChildItem -Force @args } 	
+function Start-Explorer() { 
+  param ( [string]$Path = '.' )
+  Start-Process $Path
+}
 function Invoke-BasicWebRequest() { 
   $save = $ProgressPreference
   $ProgressPreference = 'SilentlyContinue' 
@@ -153,6 +157,7 @@ function Expand-Cab() {
 } 	
 	
 Set-Alias l Get-AllChildItems
+Set-Alias e Start-Explorer
 Set-Alias zip Compress-Archive 	
 Set-Alias unzip Expand-Archive
 Set-Alias ffox firefox

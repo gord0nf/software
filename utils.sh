@@ -45,9 +45,9 @@ convert_path_if_needed() {
   local target_switch=$1
   local path=$2
   if command_exists wslpath; then
-    echo "$(wslpath "$target_switch" "$path")"
+    echo "$(wslpath $target_switch "$path")"
   elif command_exists cygpath; then
-    echo "$(cygpath "$target_switch" "$path")"
+    echo "$(cygpath $target_switch "$path")"
   else
     echo "$path"
   fi
@@ -65,4 +65,26 @@ make_directory_link() {
     printf 'mklink: '
     eval "$command"
   fi
+}
+
+# returns with 0 if success, 1 if download failed, 2 if extract failed
+download_and_extract() {
+  local url=$1
+  local outdir=$2
+  local tmp=$(mktemp)
+
+  if ! curl --fail -L -o "$tmp" "$url"; then
+    return 1
+  fi
+
+  if [[ $url == *.zip ]]; then
+    if ! unzip "$tmp" -d "$install_dir"; then
+      return 2
+    fi
+  elif [[ $url == *.tar.gz ]]; then
+    if ! tar -zxf "$tmp" -C "$install_dir"; then
+      return 2
+    fi
+  fi
+  rm -f "$tmp"
 }

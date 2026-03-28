@@ -36,19 +36,6 @@ get_download_url() {
   echo "$url"
 }
 
-install() {
-  url=$(get_download_url)
-  tmp=$(mktemp)
-
-  curl -o "$tmp" "$url"
-  if [[ $url == *.zip ]]; then
-    unzip "$tmp" -d "$install_dir"
-  elif [[ $url == *.tar.gz ]]; then
-    tar -zxf "$tmp" -C "$install_dir"
-  fi
-  rm -f "$tmp"
-}
-
 if command_exists java; then
   echo "[java] already installed"
 else
@@ -58,7 +45,7 @@ else
   fi
 
   echo "[java] installing Oracle JDK"
-  install && {
+  download_and_extract "$(get_download_url)" "$install_dir" && {
     if [[ -v old_install_dir ]]; then
       rm -fr "$old_install_dir"
     fi
@@ -69,5 +56,6 @@ else
     if [[ -v old_install_dir ]]; then
       mv "$old_install_dir" "$install_dir"
     fi
+    exit 1
   }
 fi

@@ -130,6 +130,10 @@ FTerminal.keymaps = {
       func = FTerminal.hide,
       desc = 'Close floating terminal from terminal',
     },
+    ['<C-h>'] = {
+      func = '<C-w>',
+      desc = 'Delete word in floating terminal',
+    },
   },
   ['n'] = {
     ['<Esc><Esc>'] = {

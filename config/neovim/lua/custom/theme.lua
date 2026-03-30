@@ -24,7 +24,7 @@ local function set_theme(colorscheme)
   end
 end
 
-set_theme('default')
+set_theme('vscode')
 
 -- -- Change theme every day based on day file
 --

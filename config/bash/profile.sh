@@ -14,6 +14,7 @@ alias cp="cp -i"
 
 alias ls="ls --color=auto"
 alias ll="ls -alh"
+alias l="ll"
 
 prettypath() { echo "${PATH//:/$'\n'}"; }
 

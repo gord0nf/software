@@ -1,0 +1,7 @@
+progress=false
+save=true
+save-exact=true
+
+# Define $NPM_REGISTRY_TOKEN when publishing
+registry=https://registry.npmjs.com/
+//registry.npmjs.com/:_authToken=$NPM_REGISTRY_TOKEN

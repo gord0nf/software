@@ -1,5 +1,10 @@
 SOFTWARE_ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-register() { "$SOFTWARE_ROOT/register.sh" "$@"; }
+REGISTER_SH="$SOFTWARE_ROOT/register.sh"
+if ! [[ -f "$REGISTER_SH" ]]; then
+  echo "fatal: no script at $REGISTER_SH"
+  exit 1
+fi
+register() { "$REGISTER_SH" "$@"; }
 
 # returns 'windows' | 'linux' | 'mac'
 get_os() {

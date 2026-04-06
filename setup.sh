@@ -30,7 +30,6 @@ fi
 if ! [[ -d "$SOFTWARE_ROOT/installed" ]]; then
   mkdir "$SOFTWARE_ROOT/installed"
 fi
-# TODO: more dir checks
 
 for thing in "${things[@]}"; do
   thing_setup_script="$SOFTWARE_ROOT/setup/$thing.sh"

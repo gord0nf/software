@@ -2,7 +2,11 @@
 
 config_dir=$1
 
-source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
+UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
+if ! source "$UTILS"; then
+  echo "fatal: couldn't source $UTILS"
+  exit 1
+fi
 
 if ! command_exists bash; then
   echo "no bash installation found. but you're supposed to be running this with bash..."

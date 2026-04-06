@@ -2,7 +2,11 @@
 
 config_dir=$1
 
-source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
+UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
+if ! source "$UTILS"; then
+  echo "fatal: couldn't source $UTILS"
+  exit 1
+fi
 
 if ! command_exists wt; then
   echo 'no Windows Terminal (wt) installation found. go get it...'

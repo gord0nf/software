@@ -6,7 +6,11 @@ if [[ "$3" == '--force' ]]; then
   force=true
 fi
 
-source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
+UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
+if ! source "$UTILS"; then
+  echo "fatal: couldn't source $UTILS"
+  exit 1
+fi
 
 MAJOR_VERSION=25
 

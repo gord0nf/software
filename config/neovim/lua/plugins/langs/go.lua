@@ -29,6 +29,7 @@ return {
             unusedparams = true,
             unusedwrite = true,
             useany = true,
+            QF1008 = false,
           },
           usePlaceholders = true,
           completeUnimported = true,

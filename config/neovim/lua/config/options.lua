@@ -64,7 +64,7 @@ vim.opt.clipboard = 'unnamedplus'
 -- Command line completion
 vim.opt.wildmenu = true
 vim.opt.wildmode = 'longest:full,full'
-vim.opt.wildignore:append({ '*.o', '*.obj', '*.pyc', '*.class', '*.jar' })
+vim.opt.wildignore:append({ '*.o', '*.obj', '*.pyc', '*.class' })
 
 -- Performance
 vim.opt.redrawtime = 10000

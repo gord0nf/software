@@ -38,4 +38,12 @@ return {
     end
     return -1
   end,
+  extend_or_override = function(config, custom, ...)
+    if type(custom) == 'function' then
+      config = custom(config, ...) or config
+    elseif custom then
+      config = vim.tbl_deep_extend('force', config, custom) --[[@as table]]
+    end
+    return config
+  end,
 }

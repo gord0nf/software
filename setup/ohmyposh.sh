@@ -2,16 +2,20 @@
 
 config_dir=$1
 install_dir=$2
-utils=$3
-register=$4
-force=$5
+force=false
+if [[ "$3" == '--force' ]]; then
+  force=true
+fi
 
-. "$utils"
+source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 
 if ! $force && command_exists oh-my-posh; then
   echo '[ohmyposh] already installed'
 else
   echo '[ohmyposh] running install script'
+
+  # TODO: handle already installed dir
+
   if [[ $(get_os) == 'windows' ]]; then
     if ! command_exists powershell; then
       echo 'no powershell and ur on windows? that aint right'
@@ -22,5 +26,5 @@ else
     curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$install_dir"
   fi
 
-  bash "$register" 'ohmyposh' '' "$install_dir" # Empty version 'cause it's not really that important
+  register ohmyposh '' "$install_dir" # Empty version 'cause it's not really that important
 fi

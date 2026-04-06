@@ -1,9 +1,8 @@
 #!/bin/bash
 
 config_dir=$1
-utils=$3
 
-. "$utils"
+source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 
 if ! command_exists wt; then
   echo 'no Windows Terminal (wt) installation found. go get it...'

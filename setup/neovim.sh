@@ -1,9 +1,8 @@
 #!/bin/bash
 
 config_dir=$1
-utils=$3
 
-. "$utils"
+source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 
 default_nvim_dirs=(
   "$HOME/.config/nvim"

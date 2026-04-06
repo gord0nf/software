@@ -1,3 +1,6 @@
+SOFTWARE_ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+register() { "$SOFTWARE_ROOT/register.sh" "$@"; }
+
 # returns 'windows' | 'linux' | 'mac'
 get_os() {
   if grep -qEi "(Microsoft|WSL|MSYS)" /proc/version &>/dev/null; then

@@ -1,0 +1,2 @@
+- handle premature termination (putting old dir back in place)
+- powershell: errors when sourcing $PROFILE

@@ -1,11 +1,12 @@
 #!/bin/bash
 
 install_dir=$2
-utils=$3
-register=$4
-force=$5
+force=false
+if [[ "$3" == '--force' ]]; then
+  force=true
+fi
 
-. "$utils"
+source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 
 MAJOR_VERSION=25
 
@@ -55,7 +56,7 @@ else
       rm -fr "$old_install_dir"
     fi
 
-    bash "$register" java "$MAJOR_VERSION" "$install_dir/jdk-$MAJOR_VERSION/bin"
+    register java "$MAJOR_VERSION" "$install_dir/jdk-$MAJOR_VERSION/bin"
   } || {
     echo '[java] Oracle JDK install failed'
     if [[ -v old_install_dir ]]; then

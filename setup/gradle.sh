@@ -1,11 +1,12 @@
 #!/bin/bash
 
 install_dir=$2
-utils=$3
-register=$4
-force=$5
+force=false
+if [[ "$3" == '--force' ]]; then
+  force=true
+fi
 
-. "$utils"
+source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 
 CURRENT_VERSION_API='https://services.gradle.org/versions/current'
 
@@ -39,7 +40,7 @@ else
       rm -fr "$old_install_dir"
     fi
 
-    bash "$register" gradle "$version" "$install_dir/gradle-$version/bin"
+    register gradle "$version" "$install_dir/gradle-$version/bin"
   } || {
     echo '[gradle] install failed'
     if [[ -v old_install_dir ]]; then

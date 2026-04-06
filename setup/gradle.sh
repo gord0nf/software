@@ -3,6 +3,7 @@
 install_dir=$2
 utils=$3
 register=$4
+force=$5
 
 . "$utils"
 
@@ -17,7 +18,7 @@ get_latest_version() {
   fi
 }
 
-if command_exists gradle; then
+if ! $force && command_exists gradle; then
   echo '[gradle] already installed'
 elif ! command_exists java; then
   echo '[gradle] java is a gradle prereq and no installation found. go get it...'

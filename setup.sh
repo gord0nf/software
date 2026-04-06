@@ -9,17 +9,23 @@ UTILS_SCRIPT="$SOFTWARE_ROOT/utils.sh"
 REGISTER_SCRIPT="$SOFTWARE_ROOT/register.sh"
 
 if (($# < 1)); then
-  echo 'usage: setup.sh [--all] ...things'
+  echo 'usage: setup.sh [--force|-f] [--all] ...things'
   exit 1
 fi
 
-things=($@)
+force=false
+if [[ "$1" == '--force' || "$1" == '-f' ]]; then
+  force=true
+  shift
+fi
 
-if [[ "${things[0]}" == '--all' ]]; then
+if [[ "$1" == '--all' ]]; then
   things=()
   for f in $SOFTWARE_ROOT/setup/*.sh; do
     things+=("$(basename -s '.sh' "$f")")
   done
+else
+  things=($@)
 fi
 
 if ! [[ -d "$SOFTWARE_ROOT/installed" ]]; then
@@ -38,7 +44,7 @@ for thing in "${things[@]}"; do
   fi
 
   echo "[software] running setup for '$thing'"
-  eval "$thing_setup_script" "$thing_config" "$thing_install" "$UTILS_SCRIPT" "$REGISTER_SCRIPT"
+  eval "$thing_setup_script" "$thing_config" "$thing_install" "$UTILS_SCRIPT" "$REGISTER_SCRIPT" $force
   if (($? == 0)); then
     printf "[software] \e[32m'$thing' setup success\e[0m\n\n"
   else

@@ -3,10 +3,11 @@
 install_dir=$2
 utils=$3
 register=$4
+force=$5
 
 . "$utils"
 
-MAJOR_VERSION=26
+MAJOR_VERSION=25
 
 get_download_url() {
   local url="https://download.oracle.com/java/$MAJOR_VERSION/latest/"
@@ -36,7 +37,7 @@ get_download_url() {
   echo "$url"
 }
 
-if command_exists java; then
+if ! $force && command_exists java; then
   echo "[java] already installed"
 else
   if [[ -d "$install_dir" ]]; then
@@ -46,6 +47,10 @@ else
 
   echo "[java] installing Oracle JDK"
   download_and_extract "$(get_download_url)" "$install_dir" && {
+    if ! mv "$install_dir/jdk-$MAJOR_VERSION"* "$install_dir/jdk-$MAJOR_VERSION"; then
+      echo "[java] multiple jdks of major version at $install_dir. There should be only one..."
+      exit 1
+    fi
     if [[ -v old_install_dir ]]; then
       rm -fr "$old_install_dir"
     fi

@@ -18,7 +18,10 @@ if ! $force && command_exists oh-my-posh; then
 else
   echo '[ohmyposh] running install script'
 
-  # TODO: handle already installed dir
+  if [[ -d "$install_dir" ]]; then
+    old_install_dir="${install_dir}_old"
+    mv "$install_dir" "$old_install_dir"
+  fi
 
   if [[ $(get_os) == 'windows' ]]; then
     if ! command_exists powershell; then
@@ -30,5 +33,15 @@ else
     curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$install_dir"
   fi
 
-  register ohmyposh '' "$install_dir" # Empty version 'cause it's not really that important
+  if (($? == 0)); then
+    if [[ -v old_install_dir ]]; then
+      rm -fr "$old_install_dir"
+    fi
+    register ohmyposh '' "$install_dir" # Empty version 'cause it's not really that important
+  else
+    if [[ -v old_install_dir ]]; then
+      mv "$old_install_dir" "$install_dir"
+    fi
+    exit 1
+  fi
 fi

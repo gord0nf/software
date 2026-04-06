@@ -76,6 +76,10 @@ local plugins = {
         end
       end
 
+      if not vim.tbl_contains(ensure_installed, 'tree-sitter-cli') then
+        ensure_installed[#ensure_installed + 1] = 'tree-sitter-cli'
+      end
+
       require('mason-tool-installer').setup({
         ensure_installed = ensure_installed,
         run_on_start = true,

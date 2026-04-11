@@ -1,31 +1,38 @@
 local utils = require('utils')
 
--- Load java runtimes for software installation, if available
-local runtimes = {}
-local java_install_dir =
-  vim.fn.resolve(vim.fs.joinpath(vim.loop.fs_realpath(vim.fn.stdpath('config')), '../../installed/java/'))
-if java_install_dir and vim.fn.isdirectory(java_install_dir) ~= 0 then
-  local subdirs = utils.list_subdirs(java_install_dir)
+local function get_main_runtime()
+  local java_path = os.getenv('JAVA_HOME')
+  if not java_path or java_path == '' then
+    return nil
+  end
 
-  local default_version = 0
-  local default_subdir = ''
-  for _, subdir in ipairs(subdirs) do
-    local version = tonumber(subdir:match('%d+'))
-    if version and version > default_version then
-      default_subdir = subdir
-      default_version = version
+  -- Read java version
+  local file = io.open(vim.fs.joinpath(java_path, 'release'), 'r')
+  if file then
+    local java_version = nil
+    for line in file:lines() do
+      local major_ver = string.match(line, 'JAVA_VERSION="(%d+)%.%d+%.%d+"')
+      if major_ver and major_ver ~= '' then
+        java_version = tonumber(major_ver)
+        break
+      end
     end
+    file:close()
 
-    runtimes[#runtimes + 1] = {
-      name = 'JavaSE-' .. version,
-      path = vim.fs.joinpath(java_install_dir, subdir),
-    }
+    if java_version then
+      return {
+        name = 'JavaSE-' .. java_version,
+        path = java_path,
+      }
+    end
   end
 
-  local idx = utils.index_of(subdirs, default_subdir)
-  if idx ~= -1 then
-    runtimes[idx].default = true
-  end
+  return nil
+end
+
+local default_runtime = get_main_runtime()
+if default_runtime then
+  default_runtime.default = true
 end
 
 return {
@@ -36,7 +43,7 @@ return {
       settings = {
         java = {
           configuration = {
-            runtimes = runtimes,
+            runtimes = { default_runtime },
           },
         },
       },

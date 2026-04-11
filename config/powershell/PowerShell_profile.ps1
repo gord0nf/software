@@ -190,6 +190,26 @@ if (Test-Binary msys2) {
     }
 }
 
+# Java JDK ----------------------------------------------------------------------------------------
+
+function Test-JavaHome() {
+  param ( [string]$Dir )
+  $NotFoundDirs = "bin", "lib", "include" | Where-Object { !(Test-Path $(Join-Path "$Dir" "$_") -PathType Container) }
+  if ($NotFoundDirs.Length -gt 0) {
+    return $false
+  }
+  return Test-Path $(Join-Path "$Dir" "release") -PathType Leaf
+}
+
+if (Test-Binary java) {
+  $JavaHome = Resolve-Path "$(Split-Path -Parent (Get-Command java).Path)\.."
+  if (Test-JavaHome $JavaHome) {
+    Set-EnvironmentVars @{
+      JAVA_HOME = "$JavaHome"
+    }
+  }
+}
+
 # Cool command prompt -----------------------------------------------------------------------------
 
 if (Test-Binary oh-my-posh) {

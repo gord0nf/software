@@ -16,7 +16,7 @@ if ! command_exists bash; then
   exit 1
 fi
 
-# set ~/basrc to source $config_dir/profile.sh
+# set ~/basrc to source $config_dir/bashrc.sh
 echo "[bash] making sure ~/.bashrc sources config"
 sed -i '/#@gord0nf\/software/d' ~/.bashrc &>/dev/null # clean all lines with special comment
-echo ". '$config_dir/profile.sh' #@gord0nf/software" >>~/.bashrc
+echo ". '$config_dir/bashrc.sh' #@gord0nf/software" >>~/.bashrc

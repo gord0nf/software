@@ -195,3 +195,16 @@ if (Test-Binary msys2) {
 $OMPConfig = "$PSScriptRoot\..\ohmyposh\config.json"
 if (!(Test-Path "$OMPConfig")) { $OMPConfig = 'takuya' }
 oh-my-posh init pwsh --config "$OMPConfig" | Invoke-Expression
+
+# Check dll dependencies fast ---------------------------------------------------------------------
+
+function Get-MissingDllDeps {
+  param ( [string[]]$dlls)
+  $dlls | ForEach-Object { 
+    cmd /c "dumpbin -dependents $(Split-Path -Leaf $_)" | 
+      Where-Object { $_.Contains(".dll") -and ! $_.Contains("Dump of file") } |
+      ForEach-Object { $_.Trim() } 
+  } |
+    Select-Object -Unique |
+    Where-Object { !(Test-Path $_) -and !(Get-Command -ErrorAction SilentlyContinue $_) }
+}

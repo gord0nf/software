@@ -192,9 +192,11 @@ if (Test-Binary msys2) {
 
 # Cool command prompt -----------------------------------------------------------------------------
 
-$OMPConfig = "$PSScriptRoot\..\ohmyposh\config.json"
-if (!(Test-Path "$OMPConfig")) { $OMPConfig = 'takuya' }
-oh-my-posh init pwsh --config "$OMPConfig" | Invoke-Expression
+if (Test-Binary oh-my-posh) {
+	$OMPConfig = "$PSScriptRoot\..\ohmyposh\config.json"
+	if (!(Test-Path "$OMPConfig")) { $OMPConfig = 'takuya' }
+	oh-my-posh init pwsh --config "$OMPConfig" | Invoke-Expression
+}
 
 # Check dll dependencies fast ---------------------------------------------------------------------
 

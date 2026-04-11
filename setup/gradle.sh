@@ -44,7 +44,7 @@ else
       rm -fr "$old_install_dir"
     fi
 
-    register gradle "$version" "$install_dir/gradle-$version/bin"
+    register gradle "$version" "$install_dir/bin"
   } || {
     echo '[gradle] install failed'
     if [[ -v old_install_dir ]]; then

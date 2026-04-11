@@ -86,13 +86,21 @@ download_and_extract() {
   fi
 
   if [[ $url == *.zip ]]; then
-    if ! unzip "$tmp" -d "$install_dir"; then
+    if ! unzip "$tmp" -d "$outdir"; then
       return 2
     fi
   elif [[ $url == *.tar.gz ]]; then
-    if ! tar -zxf "$tmp" -C "$install_dir"; then
+    if ! tar -zxf "$tmp" -C "$outdir"; then
       return 2
     fi
   fi
   rm -f "$tmp"
+
+  # if archive contained one root dir, mv contents to outdir and delete the empty root
+  items=$(ls "$outdir")
+  rootdir="$outdir/${items[0]}"
+  if (( "${#items[@]}" == 1 )) && [[ -d "$rootdir" ]]; then
+    mv "$rootdir"/* "$rootdir"/.* "$outdir"
+    rmdir "$rootdir"
+  fi
 }

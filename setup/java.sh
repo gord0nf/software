@@ -52,15 +52,11 @@ else
 
   echo "[java] installing Oracle JDK"
   download_and_extract "$(get_download_url)" "$install_dir" && {
-    if ! mv "$install_dir/jdk-$MAJOR_VERSION"* "$install_dir/jdk-$MAJOR_VERSION"; then
-      echo "[java] multiple jdks of major version at $install_dir. There should be only one..."
-      exit 1
-    fi
     if [[ -v old_install_dir ]]; then
       rm -fr "$old_install_dir"
     fi
 
-    register java "$MAJOR_VERSION" "$install_dir/jdk-$MAJOR_VERSION/bin"
+    register java "$MAJOR_VERSION" "$install_dir/bin"
   } || {
     echo '[java] Oracle JDK install failed'
     if [[ -v old_install_dir ]]; then

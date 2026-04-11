@@ -6,7 +6,7 @@ export LANG="en_US.UTF-8"
 
 export SOFTWARE="$(realpath "$profiledir/../../")" # @gord0nf/software specific
 
-### ALIASES -----------------------------------------------
+### Aliases ---------------------------------------------------------------------------------------
 
 alias rm="rm -i"
 alias mv="mv -i"
@@ -18,11 +18,13 @@ alias l="ll"
 
 prettypath() { echo "${PATH//:/$'\n'}"; }
 
-### Cool command prompt -----------------------------------
+### Cool command prompt ---------------------------------------------------------------------------
+
 if command_exists oh-my-posh; then
   eval "$(oh-my-posh init bash --config 'half-life')"
 fi
 
-# ### If in git bash on windows, prefer unix tools ----------
+### If in git bash on windows, prefer unix tools ------------------------------------------------
+
 # winpath_pattern='\/[a-zA-Z]\/[Ww]indows.*'
 # export PATH=$(deprioritize_paths "$winpath_pattern" "$PATH")

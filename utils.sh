@@ -99,8 +99,15 @@ download_and_extract() {
   # if archive contained one root dir, mv contents to outdir and delete the empty root
   items=$(ls "$outdir")
   rootdir="$outdir/${items[0]}"
-  if (( "${#items[@]}" == 1 )) && [[ -d "$rootdir" ]]; then
+  if (("${#items[@]}" == 1)) && [[ -d "$rootdir" ]]; then
     mv "$rootdir"/* "$rootdir"/.* "$outdir"
     rmdir "$rootdir"
   fi
+}
+
+get_latest_github_tag() {
+  local repo=$1
+  curl "https://api.github.com/repos/$repo/releases/latest" |
+    grep -E -o '.*"tag_name".*:.+' |
+    sed 's/^.*:\s*"\(.*\)".*$/\1/'
 }

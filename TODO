@@ -8,8 +8,6 @@
   - ffmpeg
   - github-cli
   - go
-  - make
   - python
-  - ripgrep
   - vscode
   - firefox (with profiles)

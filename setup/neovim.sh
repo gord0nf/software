@@ -41,6 +41,16 @@ get_download_url() {
   echo "$url"
 }
 
+install_win32_make() {
+  local install_dir=$1
+  local url='https://sourceforge.net/projects/gnuwin32/files/make/3.81/make-3.81-bin.zip/download'
+  local tmpdir=$(mktemp -d)
+
+  download_and_extract "$url" "$tmpdir" zip || return 1
+  mv "$tmpdir/bin"/* "$install_dir"
+  # rm -fr "$tmpdir"
+}
+
 configure() {
   local default_nvim_dirs=(
     "$HOME/.config/nvim"
@@ -56,7 +66,7 @@ configure() {
   done
 }
 
-if ! $force && command_exists nvim; then 
+if ! $force && command_exists nvim; then
   echo "[neovim] already installed"
 else
   if [[ -d "$install_dir" ]]; then
@@ -65,19 +75,26 @@ else
   fi
 
   echo "[neovim] installing"
-  download_and_extract "$(get_download_url)" "$install_dir" && {
-    if [[ -v old_install_dir ]]; then
-      rm -fr "$old_install_dir"
-    fi
-
-    register neovim "" "$install_dir/bin" # TODO: too lazy to get version
-  } || {
+  download_and_extract "$(get_download_url)" "$install_dir" || {
     echo '[neovim] install failed'
     if [[ -v old_install_dir ]]; then
       mv "$old_install_dir" "$install_dir"
     fi
     exit 1
   }
+
+  if [[ -v old_install_dir ]]; then
+    rm -fr "$old_install_dir"
+  fi
+
+  register neovim "" "$install_dir/bin" # TODO: too lazy to get version
+fi
+
+# since some neovim stuff needs make, so if on windows, get it
+if [[ $(get_os) == "windows" ]] && ! command_exists make; then
+  echo '[neovim] installing win32 make'
+  install_win32_make "$install_dir/bin" ||
+    echo "[neovim] win32 make install failed (it's not really required tho, it's just that some plugins need it)"
 fi
 
 configure

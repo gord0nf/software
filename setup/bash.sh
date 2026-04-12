@@ -4,14 +4,14 @@ config_dir=$1
 
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
-  echo "fatal: couldn't source $UTILS"
+  echo "fatal: couldn't source $UTILS" >&2
   exit 1
 fi
 
 if ! command_exists bash; then
-  echo "no bash installation found. but you're supposed to be running this with bash..."
+  echo "no bash installation found. but you're supposed to be running this with bash..." >&2
   if [[ $(get_os) == "windows" ]]; then
-    echo 'the quickest solution for Windows is to install Git, which installs Git Bash'
+    echo 'the quickest solution for Windows is to install Git, which installs Git Bash' >&2
   fi
   exit 1
 fi

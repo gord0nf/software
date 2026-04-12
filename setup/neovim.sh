@@ -9,36 +9,40 @@ fi
 
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
-  echo "fatal: couldn't source $UTILS"
+  echo "fatal: couldn't source $UTILS" >&2
   exit 1
 fi
 
 get_download_url() {
-  local url='https://github.com/neovim/neovim/releases/latest/download/'
-  local os=$(get_os)
-  local arch=$(get_arch)
+  local version=$1
+  local os=
+  local arch=
+  local ext=
+  case "$(get_os)" in
+  windows)
+    os=win
+    ext=zip
+    ;;
+  mac)
+    os=macos
+    ext=tar.gz
+    ;;
+  linux)
+    os=linux
+    ext=tar.gz
+    ;;
+  esac
+  case "$(get_arch)" in
+    arm) arch=-arm64;;
+      *) 
+        if [[ $os == win ]]; then
+          arch=64
+        else
+          arch=-x86_64
+        fi;;
+    esac
 
-  if [[ $os == 'windows' ]]; then
-    if [[ $arch == 'arm' ]]; then
-      url+='nvim-win-arm64.zip'
-    else
-      url+='nvim-win64.zip'
-    fi
-  elif [[ $os == 'mac' ]]; then
-    if [[ $arch == 'arm' ]]; then
-      url+='nvim-macos-arm64.tar.gz'
-    else
-      url+='nvim-macos-x86_64.tar.gz'
-    fi
-  elif [[ $os == 'linux' ]]; then
-    if [[ $arch == 'arm' ]]; then
-      url+='nvim-linux-arm64.tar.gz'
-    else
-      url+='nvim-linux-x86_64.tar.gz'
-    fi
-  fi
-
-  echo "$url"
+  echo "https://github.com/neovim/neovim/releases/download/$version/nvim-$os$arch.$ext"
 }
 
 install_win32_make() {
@@ -69,20 +73,24 @@ configure() {
 if ! $force && command_exists nvim; then
   echo "[neovim] already installed"
 else
+  echo '[neovim] getting version'
+  version=$(get_latest_github_tag 'neovim/neovim')
+  url=$(get_download_url "$version")
+
   echo "[neovim] installing"
-  atomic_download_and_extract "$(get_download_url)" "$install_dir" '' $force || {
-    echo '[neovim] install failed'
+  atomic_download_and_extract "$url" "$install_dir" '' $force || {
+    echo '[neovim] install failed' >&2
     exit 1
   }
 
-  register neovim "" "$install_dir/bin" # TODO: too lazy to get version
+  register neovim "$version" "$install_dir/bin" 
 fi
 
 # since some neovim stuff needs make, so if on windows, get it
 if [[ $(get_os) == "windows" ]] && ! command_exists make; then
   echo '[neovim] installing win32 make'
   install_win32_make "$install_dir/bin" ||
-    echo "[neovim] win32 make install failed (it's not really required tho, it's just that some plugins need it)"
+    echo "[neovim] win32 make install failed (it's not really required tho, it's just that some plugins need it)" >&2
 fi
 
 configure

@@ -8,7 +8,7 @@ fi
 
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
-  echo "fatal: couldn't source $UTILS"
+  echo "fatal: couldn't source $UTILS" >&2
   exit 1
 fi
 
@@ -53,7 +53,7 @@ else
 
   echo '[nodejs] installing'
   atomic_download_and_extract "$url" "$install_dir" '' $force || {
-    echo '[nodejs] install failed'
+    echo '[nodejs] install failed' >&2
     exit 1
   }
 

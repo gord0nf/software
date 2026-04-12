@@ -8,12 +8,16 @@ fi
 
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
-  echo "fatal: couldn't source $UTILS"
+  echo "fatal: couldn't source $UTILS" >&2
   exit 1
 fi
 
-if ! command_exists wt; then
-  echo 'no Windows Terminal (wt) installation found. go get it...'
+os=$(get_os)
+if [[ "$os" != 'windows' ]]; then
+  echo "[winterm] winterm is for windows (os=$os)" >&2
+  exit 1
+elif ! command_exists wt; then
+  echo '[winterm] no wt installation found' >&2
   exit 1
 fi
 
@@ -31,7 +35,7 @@ for loc in "${settings_locations[@]}"; do
   fi
 done
 if [[ "$settings_dir" == '' ]]; then
-  echo 'could not find wt settings dir...'
+  echo '[winterm] could not find wt settings dir' >&2
   exit 1
 fi
 

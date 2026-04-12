@@ -4,14 +4,14 @@ config_dir=$1
 
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
-  echo "fatal: couldn't source $UTILS"
+  echo "fatal: couldn't source $UTILS" >&2
   exit 1
 fi
 
 flavors=()
 if [[ $(get_os) == 'windows' ]]; then
   if ! command_exists powershell; then
-    echo "uh, you're on Windows and don't have powershell. that ain't right..."
+    echo "[powershell] uh, you're on Windows and don't have powershell. that ain't right..." >&2
     exit 1
   fi
   flavors+=("powershell")
@@ -20,7 +20,7 @@ if command_exists pwsh; then
   flavors+=("pwsh")
 fi
 if ((${#flavors[@]} == 0)); then
-  echo 'no powershell or pwsh installation found. go install em...'
+  echo '[powershell] no powershell or pwsh installation found. go install one...' >&2
   exit 1
 fi
 
@@ -40,7 +40,7 @@ for powershell in "${flavors[@]}"; do
 
   profile=$(convert_path_if_needed --unix "$(eval "$powershell -NoProfile -Command 'Write-Host \$PROFILE'")")
   if ! [[ -f "$profile" ]]; then
-    echo "PS profile file doesn't exist: $profile"
+    echo "[powershell] PS profile file doesn't exist: $profile" >&2
     exit 1
   fi
 

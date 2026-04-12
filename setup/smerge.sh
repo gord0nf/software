@@ -8,7 +8,7 @@ fi
 
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
-  echo "fatal: couldn't source $UTILS"
+  echo "fatal: couldn't source $UTILS" >&2
   exit 1
 fi
 
@@ -63,13 +63,13 @@ if ! $force && command_exists sublime_merge; then
 else
   echo '[smerge] getting url'
   url="$(get_download_url)" || {
-    echo "[smerge] couldn't get url"
+    echo "[smerge] couldn't get url" >&2
     exit 1
   }
 
   echo '[smerge] installing'
   atomic_download_and_extract "$url" "$install_dir" '' $force || {
-    echo '[smerge] install failed'
+    echo '[smerge] install failed' >&2
     exit 1
   }
 

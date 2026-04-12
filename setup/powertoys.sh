@@ -15,15 +15,15 @@ fi
 
 os=$(get_os)
 if [[ "$os" != 'windows' ]]; then
-  echo "[powertoys] powertoys is for windows (os=$os)"
+  echo "[powertoys] powertoys is for windows (os=$os)" >&2
   exit 1
 elif ! command_exists powershell; then
-  echo "[powertoys] ur on windows and don't have powershell... that ain't right"
+  echo "[powertoys] ur on windows and don't have powershell... that ain't right" >&2
   exit 1
 fi
 
 if [[ "$install_dir" != '' ]]; then
-  echo "[powertoys] warning: cannot change powertoys install location"
+  echo "[powertoys] warning: cannot change powertoys install location" >&2
 fi
 
 powershell "$config_dir/Install-PowerToys.ps1" "$force"

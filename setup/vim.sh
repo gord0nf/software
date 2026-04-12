@@ -4,12 +4,12 @@ config_dir=$1
 
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
-  echo "fatal: couldn't source $UTILS"
+  echo "fatal: couldn't source $UTILS" >&2
   exit 1
 fi
 
 if ! command_exists vim; then
-  echo 'no vim installation. go get it...'
+  echo '[vim] no vim installation. go get it...' >&2
   exit 1
 fi
 

@@ -8,34 +8,35 @@ fi
 
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
-  echo "fatal: couldn't source $UTILS"
+  echo "fatal: couldn't source $UTILS" >&2
   exit 1
 fi
 
 CURRENT_VERSION_API='https://services.gradle.org/versions/current'
 
 get_latest_version() {
-  echo '[gradle] finding latest version from gradle api' >&2
-  if ! curl "$CURRENT_VERSION_API" |
+  curl "$CURRENT_VERSION_API" |
     sed -E '/"version"\s*:\s*"([0-9]+\.[0-9]+\.[0-9]+)"/!d' |
-    sed -E 's/.*"version"\s*:\s*"([0-9]+\.[0-9]+\.[0-9]+)".*/\1/'; then
-    exit 1
-  fi
+    sed -E 's/.*"version"\s*:\s*"([0-9]+\.[0-9]+\.[0-9]+)".*/\1/'
 }
 
 if ! $force && command_exists gradle; then
   echo '[gradle] already installed'
 elif ! command_exists java; then
-  echo '[gradle] java is a gradle prereq and no installation found. go get it...'
+  echo '[gradle] java is a gradle prereq and no installation found. go get it...' >&2
   exit 1
 else
+  echo '[gradle] finding latest version from gradle api'
   version=$(get_latest_version)
-  if [[ -z $version ]]; then exit 1; fi
-  url="https://services.gradle.org/distributions/gradle-$version-bin.zip"
+  if (($? != 0)) || [[ "$version" == '' ]]; then
+    echo '[gradle] could not get latest version' >&2
+    exit 1
+  fi
 
   echo "[gradle] installing"
+  url="https://services.gradle.org/distributions/gradle-$version-bin.zip"
   atomic_download_and_extract "$url" "$install_dir" '' $force || {
-    echo '[gradle] install failed'
+    echo '[gradle] install failed' >&2
     exit 1
   }
 

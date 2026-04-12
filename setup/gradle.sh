@@ -33,23 +33,11 @@ else
   if [[ -z $version ]]; then exit 1; fi
   url="https://services.gradle.org/distributions/gradle-$version-bin.zip"
 
-  if [[ -d "$install_dir" ]]; then
-    old_install_dir="${install_dir}_old"
-    mv "$install_dir" "$old_install_dir"
-  fi
-
   echo "[gradle] installing"
-  download_and_extract "$url" "$install_dir" && {
-    if [[ -v old_install_dir ]]; then
-      rm -fr "$old_install_dir"
-    fi
-
-    register gradle "$version" "$install_dir/bin"
-  } || {
+  atomic_download_and_extract "$url" "$install_dir" '' $force || {
     echo '[gradle] install failed'
-    if [[ -v old_install_dir ]]; then
-      mv "$old_install_dir" "$install_dir"
-    fi
     exit 1
   }
+
+  register gradle "$version" "$install_dir/bin"
 fi

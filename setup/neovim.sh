@@ -48,7 +48,7 @@ install_win32_make() {
 
   download_and_extract "$url" "$tmpdir" zip || return 1
   mv "$tmpdir/bin"/* "$install_dir"
-  # rm -fr "$tmpdir"
+  rm -fr "$tmpdir"
 }
 
 configure() {
@@ -69,23 +69,11 @@ configure() {
 if ! $force && command_exists nvim; then
   echo "[neovim] already installed"
 else
-  if [[ -d "$install_dir" ]]; then
-    old_install_dir="${install_dir}_old"
-    mv "$install_dir" "$old_install_dir"
-  fi
-
   echo "[neovim] installing"
-  download_and_extract "$(get_download_url)" "$install_dir" || {
+  atomic_download_and_extract "$(get_download_url)" "$install_dir" '' $force || {
     echo '[neovim] install failed'
-    if [[ -v old_install_dir ]]; then
-      mv "$old_install_dir" "$install_dir"
-    fi
     exit 1
   }
-
-  if [[ -v old_install_dir ]]; then
-    rm -fr "$old_install_dir"
-  fi
 
   register neovim "" "$install_dir/bin" # TODO: too lazy to get version
 fi

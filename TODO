@@ -1,7 +1,3 @@
-- atomic installs
-  - download and expand to tmp directory and move to final at the very end
-  - cleanup removes temp if sigint or failed exit code else it moves the tmp to final
-    - handles premature termination
 - powershell: errors when sourcing $PROFILE
 - add software:
   - eclipse

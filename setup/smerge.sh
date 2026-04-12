@@ -61,11 +61,6 @@ get_version() {
 if ! $force && command_exists sublime_merge; then
   echo '[smerge] already installed'
 else
-  if [[ -d "$install_dir" ]]; then
-    old_install_dir="${install_dir}_old"
-    mv "$install_dir" "$old_install_dir"
-  fi
-
   echo '[smerge] getting url'
   url="$(get_download_url)" || {
     echo "[smerge] couldn't get url"
@@ -73,17 +68,10 @@ else
   }
 
   echo '[smerge] installing'
-  download_and_extract "$url" "$install_dir" || {
+  atomic_download_and_extract "$url" "$install_dir" '' $force || {
     echo '[smerge] install failed'
-    if [[ -v old_install_dir ]]; then
-      mv "$old_install_dir" "$install_dir"
-    fi
     exit 1
   }
-
-  if [[ -v old_install_dir ]]; then
-    rm -fr "$old_install_dir"
-  fi
 
   register sublime_merge "$(get_version "$url")" "$install_dir"
 fi

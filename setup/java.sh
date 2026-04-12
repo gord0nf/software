@@ -45,23 +45,11 @@ get_download_url() {
 if ! $force && command_exists java; then
   echo "[java] already installed"
 else
-  if [[ -d "$install_dir" ]]; then
-    old_install_dir="${install_dir}_old"
-    mv "$install_dir" "$old_install_dir"
-  fi
-
   echo "[java] installing Oracle JDK"
-  download_and_extract "$(get_download_url)" "$install_dir" && {
-    if [[ -v old_install_dir ]]; then
-      rm -fr "$old_install_dir"
-    fi
-
-    register java "$MAJOR_VERSION" "$install_dir/bin"
-  } || {
+  atomic_download_and_extract "$(get_download_url)" "$install_dir" '' $force || {
     echo '[java] Oracle JDK install failed'
-    if [[ -v old_install_dir ]]; then
-      mv "$old_install_dir" "$install_dir"
-    fi
     exit 1
   }
+
+  register java "$MAJOR_VERSION" "$install_dir/bin"
 fi

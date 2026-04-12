@@ -109,7 +109,7 @@ download_and_extract() {
     *.zip) archive_type=zip ;;
     *.tar | *.tar.gz | *.tar.xz) archive_type=tar ;;
     *)
-      echo 'download_and_extract: could not determine archive type from url' >&2
+      echo 'extract: could not determine archive type from url' >&2
       return 2
       ;;
     esac
@@ -127,7 +127,7 @@ download_and_extract() {
     fi
     ;;
   *)
-    echo 'download_and_extract: invalid archive_type' >&2
+    echo 'extract: invalid archive_type' >&2
     return 2
     ;;
   esac
@@ -141,6 +141,39 @@ download_and_extract() {
     mv "$rootdir"/* "$rootdir"/.* "$outdir"
     rmdir "$rootdir"
   fi
+}
+
+atomic_download_and_extract() {
+  local url=$1
+  local outdir=$2
+  local tmpoutdir="$(dirname "$outdir")/unfinished_$(basename "$outdir")"
+  local archive_type=$3 # "zip" | "tar"; optional, falls back to url filename
+  local force=false
+  if [[ "$4" == true ]]; then
+    force=true
+  fi
+
+  if [[ -e "$outdir" ]] && ! $force; then
+    echo "extract: something's already at outdir '$outdir'"
+    read -p "extract: want to replace it? (y/n) [n] " yn
+    case $yn in
+    [Yy]*) ;;
+    *) exit 1 ;;
+    esac
+  fi
+
+  download_and_extract "$url" "$tmpoutdir" "$archive_type" || {
+    local exitstatus=$?
+    if [[ -e "$tmpoutdir" ]]; then
+      rm -fr "$tmpoutdir"
+    fi
+    return $exitstatus
+  }
+
+  if [[ -e "$outdir" ]]; then
+    rm -fr "$outdir"
+  fi
+  mv "$tmpoutdir" "$outdir"
 }
 
 get_latest_github_tag() {

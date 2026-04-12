@@ -25,6 +25,19 @@ if ((${#flavors[@]} == 0)); then
 fi
 
 for powershell in "${flavors[@]}"; do
+
+  # Initial setup
+
+  printf '[powershell] running initial setup for '
+  case $powershell in
+  powershell)
+    echo 'Windows PowerShell'
+    powershell "$config_dir/Setup-WindowsPowershell.ps1"
+    ;;
+  esac
+
+  # Profile
+
   profile=$(convert_path_if_needed --unix "$(eval "$powershell -NoProfile -Command 'Write-Host \$PROFILE'")")
   if ! [[ -f "$profile" ]]; then
     echo "PS profile file doesn't exist: $profile"
@@ -34,4 +47,5 @@ for powershell in "${flavors[@]}"; do
   echo "[powershell] making sure '$profile' sources config"
   sed -i '/#@gord0nf\/software/d' "$profile" &>/dev/null # clean all lines with special comment
   echo ". '$(convert_path_if_needed --windows "$config_dir/PowerShell_profile.ps1")' #@gord0nf/software" >>"$profile"
+
 done

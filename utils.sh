@@ -64,14 +64,32 @@ convert_path_if_needed() {
 make_directory_link() {
   local actual=$1
   local link=$2
+  local force=false
+  if [[ "$1" == true ]]; then
+    force=true
+  fi
+
+  if [[ -e "$link" ]]; then
+    if ! $force; then
+      echo "mklink: something's already at link '$link'"
+      read -p "mklink: want to replace it? (y/n) [n] " yn
+      case $yn in
+      [Yy]*) ;;
+      *) exit 1 ;;
+      esac
+    fi
+
+    rm -fr "$link"
+  fi
+
   if [[ $(get_os) != 'windows' ]]; then
     ln -s "$actual" "$link"
   else
-    link=$(convert_path_if_needed --windows "$link")
     actual=$(convert_path_if_needed --windows "$actual")
-    command="cmd /C'mklink /j ""$link"" ""$actual""'"
+    link=$(convert_path_if_needed --windows "$link")
+    local cmd="cmd /C'mklink /j ""$link"" ""$actual""'"
     printf 'mklink: '
-    eval "$command"
+    eval "$cmd"
   fi
 }
 

@@ -1,6 +1,10 @@
 #!/bin/bash
 
 config_dir=$1
+force=false
+if [[ "$3" == '--force' ]]; then
+  force=true
+fi
 
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
@@ -32,4 +36,4 @@ if [[ "$settings_dir" == '' ]]; then
 fi
 
 echo "[winterm] creating directory link from '$settings_dir' to config"
-make_directory_link "$config_dir" "$settings_dir"
+make_directory_link "$config_dir" "$settings_dir" $force

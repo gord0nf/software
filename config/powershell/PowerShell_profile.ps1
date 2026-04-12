@@ -210,6 +210,10 @@ if (Test-Binary java) {
   }
 }
 
+# Powertoys in terminal ---------------------------------------------------------------------------
+
+Push-ToPath "$env:ProgramFiles\PowerToys", "$env:LOCALAPPDATA\PowerToys"
+
 # Cool command prompt -----------------------------------------------------------------------------
 
 if (Test-Binary oh-my-posh) {

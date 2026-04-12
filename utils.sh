@@ -79,21 +79,41 @@ make_directory_link() {
 download_and_extract() {
   local url=$1
   local outdir=$2
+  local archive_type=$3 # "zip" | "tar"; optional, falls back to url filename
   local tmp=$(mktemp)
 
   if ! curl --fail -L -o "$tmp" "$url"; then
     return 1
   fi
 
-  if [[ $url == *.zip ]]; then
+  if [[ "$archive_type" == '' ]]; then
+    case "$url" in
+    *.zip) archive_type=zip ;;
+    *.tar | *.tar.gz | *.tar.xz) archive_type=tar ;;
+    *)
+      echo 'download_and_extract: could not determine archive type from url' >&2
+      return 2
+      ;;
+    esac
+  fi
+
+  case "$archive_type" in
+  zip)
     if ! unzip "$tmp" -d "$outdir"; then
       return 2
     fi
-  elif [[ $url == *.tar.gz ]]; then
-    if ! tar -zxf "$tmp" -C "$outdir"; then
+    ;;
+  tar)
+    if ! tar -xf "$tmp" -C "$outdir"; then
       return 2
     fi
-  fi
+    ;;
+  *)
+    echo 'download_and_extract: invalid archive_type' >&2
+    return 2
+    ;;
+  esac
+
   rm -f "$tmp"
 
   # if archive contained one root dir, mv contents to outdir and delete the empty root

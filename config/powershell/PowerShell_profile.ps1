@@ -13,7 +13,7 @@ function Push-ToPath() {
       [string[]]$Directories,
       [switch]$AtStart
     )
-    $ValidDirectories = $Directories | Where-Object { Test-Path $_ }
+    $ValidDirectories = $Directories | Where-Object { Test-Path $_ } | ForEach-Object { Resolve-Path $_ }
     if ($env:PATH[-1] -ne ';') {
         $env:PATH += ';'
     }
@@ -28,8 +28,10 @@ function Set-EnvironmentVars() {
     param([hashtable]$EnvVariablePairs, [switch]$NotAPath)
     foreach ($name in $EnvVariablePairs.Keys) {
         $value = $EnvVariablePairs[$name]
-        if (!$NotAPath -and (Test-Path $value -IsValid) -and !(Test-Path $value)) {
-            continue
+        if (!$NotAPath -and (Test-Path $value -IsValid)) {
+          if (Test-Path $value) {
+            $value = Resolve-Path $value
+          } else { continue; }
         }
         Set-Item -Path "Env:$name" -Value "$value"
     }
@@ -39,11 +41,16 @@ function Set-EnvironmentVars() {
 
 $PROFILE = $PSCommandPath
 
+$powershellPath = (Get-Command pwsh -ErrorAction SilentlyContinue).Path
+if (($powershellPath -eq $null) -or !(Test-Path $powershellPath)) {
+  $powershellPath = (Get-Command powershell).Path
+}
+
 Set-EnvironmentVars @{
-    SOFTWARE = "$HOME\dev\software"
-    REPOS    = "$HOME\dev\repos"
+    SOFTWARE = "$PSScriptRoot\..\.."
+    REPOS    = "$HOME\dev\repos" # something i like
     HIST     = (Get-PSReadLineOption).HistorySavePath
-    SHELL    = (Get-Command powershell).Path
+    SHELL    = "$powershellPath"
 }
 
 $HIST = $env:HIST
@@ -52,36 +59,26 @@ $SHELL = $env:SHELL
 # PATH --------------------------------------------------------------------------------------------
 
 # Register to path from software.csv
-
-$SoftwareCsv = "$PSScriptRoot\..\..\software.csv"
-if (Test-Path "$SoftwareCsv") {
-  $paths = @()
-   Import-Csv "$SoftwareCsv" | ForEach-Object {
-     $paths += $_.paths -split '\|'
-   }
-   Push-ToPath $paths
+if ($env:SOFTWARE.Length -gt 0) {
+  $SoftwareCsv = "$env:SOFTWARE\software.csv"
+  if (Test-Path "$SoftwareCsv") {
+    $paths = @()
+      Import-Csv "$SoftwareCsv" | ForEach-Object {
+        $paths += $_.paths -split '\|'
+      }
+    Push-ToPath $paths
+  }
 }
 
-# Software Paths 
+# Some edge cases to check for
 Push-ToPath @(
-    "C:\Windows\Microsoft.NET\Framework\v4.0.30319\",           # DOTNET C#
-    "C:\desktopVS\VC\Tools\MSVC\14.44.35207\bin\Hostx86\x86\",  # MSVC C/C++
-    "C:\eclipse",                                               # Eclipse IDE
-    "$env:SOFTWARE",                    # Any generic software
-    "$env:SOFTWARE\go\bin",             # GoLang
-    "$env:SOFTWARE\sqlite",             # SQLite
-    "$env:SOFTWARE\lazygit",            # Lazygit
-    "$env:SOFTWARE\ripgrep",            # Ripgrep (for telescope, usually)
-    "$env:SOFTWARE\msys2"               # MSYS2 / Mingw
-    "$env:SOFTWARE\make\bin",		        # Gnu Make
-    "$env:SOFTWARE\apache-maven\bin",   # Apache Maven
-    "$env:SOFTWARE\gradle\bin",         # Gradle
-    "$env:SOFTWARE\nodejs",             # NodeJS
-    "$env:SOFTWARE\neovim\bin",		      # NeoVim
-    "$env:SOFTWARE\sublime_merge",      # Sublime Merge
-    "$env:SOFTWARE\github-cli\bin",     # GitHub cli
-    "$env:SOFTWARE\ffmpeg\bin"          # FFmpeg
+  "C:\Windows\Microsoft.NET\Framework\v4.0.30319\",            # DOTNET C#
+  "C:\desktopVS\VC\Tools\MSVC\14.44.35207\bin\Hostx86\x86\",   # MSVC C/C++
+  "C:\eclipse",                                                # Eclipse IDE
+  "$env:ProgramFiles\PowerToys", "$env:LOCALAPPDATA\PowerToys" # PowerToys
 )
+
+# Web browser -------------------------------------------------------------------------------------
 
 function Get-WebBrowserDirectories() {
     [OutputType([string[]])]
@@ -116,7 +113,28 @@ function Get-WebBrowserDirectories() {
 
     return $BrowserLocations
 }
+
 Push-ToPath (Get-WebBrowserDirectories)
+
+# Java JDK ----------------------------------------------------------------------------------------
+
+function Test-JavaHome() {
+  param ( [string]$Dir )
+  $NotFoundDirs = "bin", "lib", "include" | Where-Object { !(Test-Path $(Join-Path "$Dir" "$_") -PathType Container) }
+  if ($NotFoundDirs.Length -gt 0) {
+    return $false
+  }
+  return Test-Path $(Join-Path "$Dir" "release") -PathType Leaf
+}
+
+if (Test-Binary java) {
+  $JavaHome = Resolve-Path "$(Split-Path -Parent (Get-Command java).Path)\.."
+  if (Test-JavaHome $JavaHome) {
+    Set-EnvironmentVars @{
+      JAVA_HOME = "$JavaHome"
+    }
+  }
+}
 
 # Custom functions and aliases -------------------------------------------------------------------- 	
 	
@@ -155,6 +173,16 @@ function Expand-Cab() {
     param( [string]$Path, [string]$Destination ) 	
     expand.exe -F:* "$Path" "$Destination" 	
 } 	
+function Get-MissingDllDeps {
+  param ( [string[]]$dlls)
+  $dlls | ForEach-Object { 
+    cmd /c "dumpbin -dependents $(Split-Path -Leaf $_)" | 
+      Where-Object { $_.Contains(".dll") -and ! $_.Contains("Dump of file") } |
+      ForEach-Object { $_.Trim() } 
+  } |
+    Select-Object -Unique |
+    Where-Object { !(Test-Path $_) -and !(Get-Command -ErrorAction SilentlyContinue $_) }
+}
 	
 Set-Alias l Get-AllChildItems
 Set-Alias e Start-Explorer
@@ -179,58 +207,10 @@ if ($env:EDITOR -like 'code*') {
     $env:EDITOR += " --wait"
 }
 
-# MSYS2/Mingw -------------------------------------------------------------------------------------
-
-if (Test-Binary msys2) {
-    Set-EnvironmentVars @{
-        MSYS2_ROOT             = "$SOFTWARE\msys2" 
-        OPENSSL_ROOT_DIR       = "$env:SOFTWARE\openssl"
-        OPENSSL_CRYPTO_LIBRARY = "$env:SOFTWARE\openssl\libcrypto.a"
-        OPENSSL_INCLUDE_DIR    = "$env:SOFTWARE\openssl\include"
-    }
-}
-
-# Java JDK ----------------------------------------------------------------------------------------
-
-function Test-JavaHome() {
-  param ( [string]$Dir )
-  $NotFoundDirs = "bin", "lib", "include" | Where-Object { !(Test-Path $(Join-Path "$Dir" "$_") -PathType Container) }
-  if ($NotFoundDirs.Length -gt 0) {
-    return $false
-  }
-  return Test-Path $(Join-Path "$Dir" "release") -PathType Leaf
-}
-
-if (Test-Binary java) {
-  $JavaHome = Resolve-Path "$(Split-Path -Parent (Get-Command java).Path)\.."
-  if (Test-JavaHome $JavaHome) {
-    Set-EnvironmentVars @{
-      JAVA_HOME = "$JavaHome"
-    }
-  }
-}
-
-# Powertoys in terminal ---------------------------------------------------------------------------
-
-Push-ToPath "$env:ProgramFiles\PowerToys", "$env:LOCALAPPDATA\PowerToys"
-
 # Cool command prompt -----------------------------------------------------------------------------
 
 if (Test-Binary oh-my-posh) {
 	$OMPConfig = "$PSScriptRoot\..\ohmyposh\config.json"
 	if (!(Test-Path "$OMPConfig")) { $OMPConfig = 'takuya' }
 	oh-my-posh init pwsh --config "$OMPConfig" | Invoke-Expression
-}
-
-# Check dll dependencies fast ---------------------------------------------------------------------
-
-function Get-MissingDllDeps {
-  param ( [string[]]$dlls)
-  $dlls | ForEach-Object { 
-    cmd /c "dumpbin -dependents $(Split-Path -Leaf $_)" | 
-      Where-Object { $_.Contains(".dll") -and ! $_.Contains("Dump of file") } |
-      ForEach-Object { $_.Trim() } 
-  } |
-    Select-Object -Unique |
-    Where-Object { !(Test-Path $_) -and !(Get-Command -ErrorAction SilentlyContinue $_) }
 }

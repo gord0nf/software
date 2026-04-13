@@ -2,7 +2,6 @@
   - eclipse
   - ffmpeg
   - github-cli
-  - go
   - python
   - vscode
   - firefox (with profiles)

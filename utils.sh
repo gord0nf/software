@@ -100,7 +100,7 @@ download_and_extract() {
   local archive_type=$3 # "zip" | "tar"; optional, falls back to url filename
   local tmp=$(mktemp)
 
-  if ! curl --fail -L -o "$tmp" "$url"; then
+  if ! curl --ssl-revoke-best-effort --fail -L -o "$tmp" "$url"; then
     return 1
   fi
 

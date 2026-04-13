@@ -13,7 +13,7 @@ if ! source "$UTILS"; then
 fi
 
 get_version() {
-  curl 'https://go.dev/VERSION?m=text' |
+  curl --ssl-revoke-best-effort 'https://go.dev/VERSION?m=text' |
     grep -P '^go\d+\.\d+\.\d+$'
 }
 

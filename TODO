@@ -1,4 +1,3 @@
-- powershell: errors when sourcing $PROFILE
 - add software:
   - eclipse
   - ffmpeg

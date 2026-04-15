@@ -4,6 +4,9 @@ vim.keymap.set('i', 'kj', '<Esc>', { desc = 'Escape insert mode', noremap = true
 vim.keymap.set('i', 'fj', '<Esc>', { desc = 'Escape insert mode', noremap = true }) -- good for mobile
 vim.keymap.set('i', 'jf', '<Esc>', { desc = 'Escape insert mode', noremap = true }) -- good for mobile
 
+-- Quick write
+vim.keymap.set('n', '<leader>w', ':w<CR>', { desc = 'Quick write' })
+
 -- Yank entire line
 vim.keymap.set('n', 'Y', 'y$', { desc = 'Yank to EOL' })
 

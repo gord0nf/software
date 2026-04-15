@@ -63,10 +63,10 @@ if ($env:SOFTWARE.Length -gt 0) {
   $SoftwareCsv = "$env:SOFTWARE\software.csv"
   if (Test-Path "$SoftwareCsv") {
     $paths = @()
-      Import-Csv "$SoftwareCsv" | ForEach-Object {
-        $paths += $_.paths -split '\|'
-      }
-    Push-ToPath $paths
+    Import-Csv "$SoftwareCsv" | ForEach-Object {
+      $paths += $_.paths -split '\|'
+    }
+    Push-ToPath $paths -AtStart
   }
 }
 

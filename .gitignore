@@ -8,5 +8,5 @@ software.csv
 **/lazyvim.json
 
 # winterm
-config/winterm/state.json
+src/config/winterm/state.json
 

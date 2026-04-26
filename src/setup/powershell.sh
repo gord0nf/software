@@ -32,7 +32,7 @@ for powershell in "${flavors[@]}"; do
   case $powershell in
   powershell)
     echo 'Windows PowerShell'
-    powershell "$config_dir/Setup-WindowsPowershell.ps1"
+    powershell -NoProfile "$config_dir/Setup-WindowsPowershell.ps1"
     ;;
   esac
 

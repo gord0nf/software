@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # A `thing` is a software tool or some other, well, thing. Each thing should have a setup script
-# at `setup/{THING}.sh`, and any config stuff in `config/{THING}/` (optional). The setup script
-# sets the thing up and links anything in `config/{THING}`. Each setup script has independent usage
+# at `src/setup/{THING}.sh`, and any config stuff in `src/config/{THING}/` (optional). The setup script
+# sets the thing up and links anything in `src/config/{THING}`. Each setup script has independent usage
 # like `{THING}.sh <config_dir> <install_dir> [--force]`
 
 SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
@@ -34,7 +34,7 @@ while (($# > 0)); do
     shift
     ;;
   --all | -a)
-    for f in "$SOFTWARE_ROOT/setup/"*.sh; do
+    for f in "$SOFTWARE_ROOT/src/setup/"*.sh; do
       thing=$(basename -s '.sh' "$f")
       if ! has_element things "$thing"; then
         things+=("$thing")
@@ -49,7 +49,7 @@ while (($# > 0)); do
   *)
     if is_script "$1" && ! has_element other_scripts "$1"; then
       other_scripts+=("$1")
-    elif [[ -f "$SOFTWARE_ROOT/setup/$1.sh" ]] && ! has_element things "$1"; then
+    elif [[ -f "$SOFTWARE_ROOT/src/setup/$1.sh" ]] && ! has_element things "$1"; then
       things+=("$1")
     else
       printf "$PREFIX \033[31m'$1' isn't a thing or a script\033[0m\n" >&2
@@ -65,8 +65,8 @@ if ! [[ -d "$SOFTWARE_ROOT/installed" ]]; then
 fi
 
 for thing in "${things[@]}"; do
-  thing_setup_script="$SOFTWARE_ROOT/setup/$thing.sh"
-  thing_config="$SOFTWARE_ROOT/config/$thing"
+  thing_setup_script="$SOFTWARE_ROOT/src/setup/$thing.sh"
+  thing_config="$SOFTWARE_ROOT/src/config/$thing"
   thing_install="$SOFTWARE_ROOT/installed/$thing"
 
   if bash "$thing_setup_script" "$thing_config" "$thing_install" $force; then

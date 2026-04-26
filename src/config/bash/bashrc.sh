@@ -4,7 +4,7 @@ profiledir=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 export CLICOLOR=1
 export LANG="en_US.UTF-8"
 
-export SOFTWARE="$(realpath "$profiledir/../../")" # @gord0nf/software specific
+export SOFTWARE="$(realpath "$profiledir/../../../")" # @gord0nf/software specific
 
 ### Path ------------------------------------------------------------------------------------------
 

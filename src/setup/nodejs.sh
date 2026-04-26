@@ -6,6 +6,7 @@ if [[ "$3" == '--force' ]]; then
   force=true
 fi
 
+THING=nodejs
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
   echo "fatal: couldn't source $UTILS" >&2
@@ -35,27 +36,20 @@ get_download_url() {
   case "$(get_arch)" in
   amd/x64) arch=x64 ;;
   arm) arch=arm64 ;;
-  x32)
-    echo "[nodejs] arch not supported" >&2
-    return 1
-    ;;
+  x32) fatal 'arch not supported' ;;
   esac
 
   echo "https://nodejs.org/dist/$version/node-$version-$os-$arch.$ext"
 }
 
 if ! $force && command_exists node; then
-  echo '[nodejs] already installed'
+  log 'already installed'
 else
-  echo '[nodejs] getting version'
+  log 'getting version'
   version=$(get_latest_github_tag 'nodejs/node')
   url=$(get_download_url "$version")
 
-  echo '[nodejs] installing'
-  atomic_download_and_extract "$url" "$install_dir" '' $force || {
-    echo '[nodejs] install failed' >&2
-    exit 1
-  }
-
+  log 'installing'
+  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
   register nodejs "$version" "$install_dir"
 fi

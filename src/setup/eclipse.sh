@@ -7,6 +7,7 @@ if [[ "$3" == '--force' ]]; then
   force=true
 fi
 
+THING=eclipse
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
   echo "fatal: couldn't source $UTILS" >&2
@@ -34,40 +35,25 @@ get_download_url() {
     os=linux-gtk
     ext=tar.gz
     ;;
-  mac)
-    echo "[eclipse] macos hasn't been implemented in script yet" >&2
-    exit 1
-    ;;
+  mac) fatal "macos hasn't been implemented in script yet" ;;
   esac
   case "$(get_arch)" in
   amd/x64) arch=x86_64 ;;
   amd) arch=aarch64 ;;
-  *)
-    echo '[eclipse] arch not supported' >&2
-    exit 1
-    ;;
+  *) fatal 'arch not supported' ;;
   esac
 
   echo "https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/$version/R/eclipse-java-$version-R-$os-$arch.$ext"
 }
 
 if ! $force && command_exists eclipse; then
-  echo '[eclipse] already installed'
+  log 'already installed'
 else
-  echo '[eclipse] getting version'
-  version=$(get_version) || {
-    echo '[eclipse] failed to get version' >&2
-    exit 1
-  }
+  log 'getting version'
+  version=$(get_version) || fatal 'failed to get version'
 
-  echo '[eclipse] installing'
+  log 'installing'
   url=$(get_download_url "$version")
-  echo "$url"
-  exit
-  atomic_download_and_extract "$url" "$install_dir" '' $force || {
-    echo '[eclipse] install failed' >&2
-    exit 1
-  }
-
+  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
   register eclipse "$version" "$install_dir"
 fi

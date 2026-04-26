@@ -7,6 +7,7 @@ if [[ "$3" == '--force' ]]; then
   force=true
 fi
 
+THING=ohmyposh
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
   echo "fatal: couldn't source $UTILS" >&2
@@ -21,10 +22,7 @@ get_download_url() {
   fi
   case "$arch" in
   amd/x64) arch=amd64 ;;
-  x32)
-    echo '[ohmyposh] x32 arch not supported' >&2
-    exit 1
-    ;;
+  x32) fatal 'x32 arch not supported' ;;
   esac
   if is_android; then
     echo 'https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-android-arm'
@@ -35,14 +33,11 @@ get_download_url() {
 }
 
 if ! $force && command_exists oh-my-posh; then
-  echo '[ohmyposh] already installed'
+  log 'already installed'
 else
-  echo "[ohmyposh] downloading"
+  log 'downloading'
   url=$(get_download_url)
-  tmp=$(download "$url") || {
-    echo '[ohmyposh] download failed' >&2
-    exit 1
-  }
+  tmp=$(download "$url") || fatal 'download failed'
 
   mkdir -p "$install_dir"
   mv "$tmp" "$install_dir/oh-my-posh"

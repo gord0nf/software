@@ -6,6 +6,7 @@ if [[ "$3" == '--force' ]]; then
   force=true
 fi
 
+THING=python
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
   echo "fatal: couldn't source $UTILS" >&2
@@ -52,28 +53,18 @@ get_download_url() {
       echo "$url-x86_64-linux-android.tar.gz"
     fi
     ;;
-  mac)
-    echo "[python] the dev(s) haven't implemented mac for this yet" >&2
-    exit 1
-    ;;
+  mac) fatal "the dev(s) haven't implemented mac for this yet" ;;
   esac
 }
 
 if ! $force && command_exists python && python --version; then
-  echo '[python] already installed'
+  log 'already installed'
 else
-  echo '[python] getting current version'
-  version=$(get_version) || {
-    echo "[python] couldn't get version number" >&2
-    exit 1
-  }
+  log 'getting current version'
+  version=$(get_version) || fatal "couldn't get version number"
 
-  echo '[python] installing'
+  log 'installing'
   url=$(get_download_url "$version")
-  atomic_download_and_extract "$url" "$install_dir" '' $force || {
-    echo '[python] install failed' >&2
-    exit 1
-  }
-
+  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
   register python "$version" "$install_dir"
 fi

@@ -1,10 +1,15 @@
-SOFTWARE_ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-REGISTER_SH="$SOFTWARE_ROOT/register.sh"
+SOFTWARE_SRC=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+
+# alias for register.sh
+REGISTER_SH="$SOFTWARE_SRC/register.sh"
 if ! [[ -f "$REGISTER_SH" ]]; then
   echo "fatal: no script at $REGISTER_SH"
   exit 1
 fi
 register() { "$REGISTER_SH" "$@"; }
+
+# logging functions
+. "$SOFTWARE_SRC/log.sh"
 
 # returns 'windows' | 'linux' | 'mac'
 get_os() {

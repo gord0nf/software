@@ -12,6 +12,7 @@ bin_paths=("$@")
 
 SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 SOFTWARE_CSV="$SOFTWARE_ROOT/software.csv"
+THING=register
 
 . "$SOFTWARE_ROOT/utils.sh"
 
@@ -30,5 +31,5 @@ if [[ "$bin_paths_arr" != '' ]]; then
   bin_paths_arr="${bin_paths_arr::-1}"
 fi
 
-echo "[register] registering $thing"
+log "registering $thing"
 echo "$thing,$version,$bin_paths_arr" >>"$SOFTWARE_CSV"

@@ -6,6 +6,7 @@ if [[ "$3" == '--force' ]]; then
   force=true
 fi
 
+THING=gradle
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
   echo "fatal: couldn't source $UTILS" >&2
@@ -21,24 +22,18 @@ get_latest_version() {
 }
 
 if ! $force && command_exists gradle; then
-  echo '[gradle] already installed'
+  log 'already installed'
 elif ! command_exists java; then
-  echo '[gradle] java is a gradle prereq and no installation found. go get it...' >&2
-  exit 1
+  fatal 'java is a gradle prereq and no installation found. go get it...'
 else
-  echo '[gradle] finding latest version from gradle api'
+  log 'finding latest version from gradle api'
   version=$(get_latest_version)
-  if (($? != 0)) || [[ "$version" == '' ]]; then
-    echo '[gradle] could not get latest version' >&2
-    exit 1
+  if [ $? -ne 0 ] || [[ -z "$version" ]]; then
+    fatal 'could not get latest version'
   fi
 
-  echo "[gradle] installing"
+  log 'installing'
   url="https://services.gradle.org/distributions/gradle-$version-bin.zip"
-  atomic_download_and_extract "$url" "$install_dir" '' $force || {
-    echo '[gradle] install failed' >&2
-    exit 1
-  }
-
+  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
   register gradle "$version" "$install_dir/bin"
 fi

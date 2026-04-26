@@ -7,6 +7,7 @@ if [[ "$3" == '--force' ]]; then
   force=true
 fi
 
+THING=neovim
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
   echo "fatal: couldn't source $UTILS" >&2
@@ -33,14 +34,15 @@ get_download_url() {
     ;;
   esac
   case "$(get_arch)" in
-    arm) arch=-arm64;;
-      *) 
-        if [[ $os == win ]]; then
-          arch=64
-        else
-          arch=-x86_64
-        fi;;
-    esac
+  arm) arch=-arm64 ;;
+  *)
+    if [[ $os == win ]]; then
+      arch=64
+    else
+      arch=-x86_64
+    fi
+    ;;
+  esac
 
   echo "https://github.com/neovim/neovim/releases/download/$version/nvim-$os$arch.$ext"
 }
@@ -64,33 +66,29 @@ configure() {
   # create link from default nvim dir(s) to config
   for nvim_dir in "${default_nvim_dirs[@]}"; do
     if [[ -d "$(dirname "$nvim_dir")" ]]; then
-      echo "[neovim] creating directory link from '$nvim_dir' to config"
+      log "creating directory link from '$nvim_dir' to config"
       make_directory_link "$config_dir" "$nvim_dir" $force
     fi
   done
 }
 
 if ! $force && command_exists nvim; then
-  echo "[neovim] already installed"
+  log 'already installed'
 else
-  echo '[neovim] getting version'
+  log 'getting version'
   version=$(get_latest_github_tag 'neovim/neovim')
   url=$(get_download_url "$version")
 
-  echo "[neovim] installing"
-  atomic_download_and_extract "$url" "$install_dir" '' $force || {
-    echo '[neovim] install failed' >&2
-    exit 1
-  }
-
-  register neovim "$version" "$install_dir/bin" 
+  log 'installing'
+  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
+  register neovim "$version" "$install_dir/bin"
 fi
 
 # since some neovim stuff needs make, so if on windows, get it
 if [[ $(get_os) == "windows" ]] && ! command_exists make; then
-  echo '[neovim] installing win32 make'
+  log 'installing win32 make'
   install_win32_make "$install_dir/bin" ||
-    echo "[neovim] win32 make install failed (it's not really required tho, it's just that some plugins need it)" >&2
+    warn "win32 make install failed (it's not really required tho, it's just that some plugins need it)"
 fi
 
 configure

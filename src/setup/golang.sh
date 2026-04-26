@@ -6,6 +6,7 @@ if [[ "$3" == '--force' ]]; then
   force=true
 fi
 
+THING=golang
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
   echo "fatal: couldn't source $UTILS" >&2
@@ -46,17 +47,13 @@ get_download_url() {
 }
 
 if ! $force && command_exists go; then
-  echo '[golang] already installed'
+  log 'already installed'
 else
-  echo '[golang] getting version'
+  log 'getting version'
   version=$(get_version)
   url=$(get_download_url "$version")
 
-  echo '[golang] installing'
-  atomic_download_and_extract "$url" "$install_dir" '' $force || {
-    echo '[golang] install failed' >&2
-    exit 1
-  }
-
+  log 'installing'
+  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
   register go "$version" "$install_dir/bin"
 fi

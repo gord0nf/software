@@ -6,6 +6,7 @@ if [[ "$3" == '--force' ]]; then
   force=true
 fi
 
+THING=smerge
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
   echo "fatal: couldn't source $UTILS" >&2
@@ -18,10 +19,7 @@ get_download_url() {
   local prefix=
   case "$os" in
   windows)
-    if [[ "$arch" != 'amd/x64' ]]; then
-      echo '[smerge] nothing for your os and arch' >&2
-      return 1
-    fi
+    [[ "$arch" == 'amd/x64' ]] || fatal 'nothing for your os and arch'
     prefix='x64\.zip'
     ;;
   mac) prefix='mac\.zip' ;;
@@ -59,19 +57,12 @@ get_version() {
 }
 
 if ! $force && command_exists sublime_merge; then
-  echo '[smerge] already installed'
+  log 'already installed'
 else
-  echo '[smerge] getting url'
-  url="$(get_download_url)" || {
-    echo "[smerge] couldn't get url" >&2
-    exit 1
-  }
+  log 'getting url'
+  url="$(get_download_url)" || fatal "couldn't get url"
 
-  echo '[smerge] installing'
-  atomic_download_and_extract "$url" "$install_dir" '' $force || {
-    echo '[smerge] install failed' >&2
-    exit 1
-  }
-
+  log 'installing'
+  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
   register sublime_merge "$(get_version "$url")" "$install_dir"
 fi

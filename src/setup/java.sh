@@ -6,6 +6,7 @@ if [[ "$3" == '--force' ]]; then
   force=true
 fi
 
+THING=java
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
   echo "fatal: couldn't source $UTILS" >&2
@@ -20,10 +21,7 @@ get_download_url() {
 
   case "$(get_os)" in
   windows)
-    if [[ $arch != 'amd/x64' ]]; then
-      echo "[java] Oracle JDK doesn't support your cpu" >&2
-      return 1
-    fi
+    [[ $arch == 'amd/x64' ]] || fatal "Oracle JDK doesn't support your cpu"
     url+="jdk-${MAJOR_VERSION}_windows-x64_bin.zip"
     ;;
   mac)
@@ -46,13 +44,10 @@ get_download_url() {
 }
 
 if ! $force && command_exists java; then
-  echo "[java] already installed"
+  log 'already installed'
 else
-  echo "[java] installing Oracle JDK"
-  atomic_download_and_extract "$(get_download_url)" "$install_dir" '' $force || {
-    echo '[java] Oracle JDK install failed' >&2
-    exit 1
-  }
-
+  log 'installing Oracle JDK'
+  atomic_download_and_extract "$(get_download_url)" "$install_dir" '' $force ||
+    fatal 'Oracle JDK install failed'
   register java "$MAJOR_VERSION" "$install_dir/bin"
 fi

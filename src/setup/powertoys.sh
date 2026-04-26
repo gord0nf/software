@@ -7,6 +7,7 @@ if [[ "$3" == '--force' ]]; then
   force='-Force'
 fi
 
+THING=powertoys
 UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
 if ! source "$UTILS"; then
   echo "fatal: couldn't source $UTILS"
@@ -14,20 +15,15 @@ if ! source "$UTILS"; then
 fi
 
 os=$(get_os)
-if [[ "$os" != 'windows' ]]; then
-  echo "[powertoys] powertoys is for windows (os=$os)" >&2
-  exit 1
-elif ! command_exists powershell; then
-  echo "[powertoys] ur on windows and don't have powershell... that ain't right" >&2
-  exit 1
-fi
+[[ "$os" == 'windows' ]] || fatal "powertoys is for windows (os=$os)"
+command_exists powershell || fatal " ur on windows and don't have powershell... that ain't right"
 
 if [[ "$install_dir" != '' ]]; then
-  echo "[powertoys] warning: cannot change powertoys install location" >&2
+  warn 'cannot change powertoys install location'
 fi
 
 powershell "$config_dir/Install-PowerToys.ps1" "$force"
 if (($? == 0)); then
-  echo "[powertoys] loading backup DSC"
+  log 'loading backup DSC'
   powershell "$config_dir/Load-DSCBackup.ps1" "$config_dir/backup.json"
 fi

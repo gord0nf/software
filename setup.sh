@@ -7,7 +7,11 @@
 
 SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 HELP='usage: setup.sh [--force|-f] [--all|-a] ...(things or setup scripts)'
-PREFIX="[\033[3msoftware\033[0m]"
+
+# logging
+THING=software
+PREFIX_FORMAT='%s:'
+. "$SOFTWARE_ROOT/src/log.sh"
 
 is_script() {
   [[ -f "$1" ]] && IFS= LC_ALL=C read -rN2 shebang <"$1" && [ "$shebang" = '#!' ]
@@ -45,12 +49,10 @@ load_preset() {
   while IFS=$'\r\n' read -r line; do
     ((line_no++))
     if [[ "$line" =~ extends:(.+) ]]; then
-      local extended=$(get_preset_path "${BASH_REMATCH[1]}") &&
-        load_preset "$extended" ||
-        printf "$PREFIX warning: couldn't load line $line_no for $preset_path\n" >&2
+      local extended=$(get_preset_path "${BASH_REMATCH[1]}") && load_preset "$extended" ||
+        warn "couldn't load line $line_no for $preset_path"
     else
-      add_thing "$line" ||
-        printf "$PREFIX warning: couldn't load line $line_no for $preset_path\n" >&2
+      add_thing "$line" || warn "couldn't load line $line_no for $preset_path"
     fi
   done <"$preset_path"
 }
@@ -89,8 +91,8 @@ while (($# > 0)); do
       load_preset "$preset_path"
     else
       add_thing "$1" || {
-        printf "$PREFIX \033[31m'$1' isn't a thing, preset, or script\033[0m\n" >&2
-        printf "$PREFIX \033[33mskipping '$1'\033[0m\n"
+        warn "'$1' isn't a thing, preset, or script. skipping..."
+        echo # style
       }
     fi
     shift
@@ -107,13 +109,15 @@ for thing in "${things[@]}"; do
   thing_config="$SOFTWARE_ROOT/src/config/$thing"
   thing_install="$SOFTWARE_ROOT/installed/$thing"
 
-  bash "$thing_script" "$thing_config" "$thing_install" $force &&
-    printf "$PREFIX \e[32m'$thing' setup success\e[0m\n\n" ||
-    printf "$PREFIX \e[31m'$thing' setup failed\e[0m\n\n"
+  log "thing: $thing"
+  bash "$thing_script" "$thing_config" "$thing_install" $force
+  log_result "'$thing' setup"
+  echo # style
 done
 
 for script in "${other_scripts[@]}"; do
-  bash "$script" '' '' $force &&
-    printf "$PREFIX \e[32m$script success\e[0m\n\n" ||
-    printf "$PREFIX \e[31m$thing failed\e[0m\n\n"
+  log "script: $script"
+  bash "$script" '' '' $force
+  log_result "$script"
+  echo # style
 done

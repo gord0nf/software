@@ -30,6 +30,7 @@ else
     fi
     powershell "$config_dir/Install-OMP.ps1" -InstallDir "$(convert_path_if_needed --windows "$install_dir")"
   else
+    mkdir -p "$install_dir"
     curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$install_dir"
   fi
 

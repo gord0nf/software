@@ -13,36 +13,44 @@ if ! source "$UTILS"; then
   exit 1
 fi
 
+get_download_url() {
+  local os=$(get_os)
+  local arch=$(get_arch)
+  if [[ $os == mac ]]; then
+    os=darwin
+  fi
+  case "$arch" in
+  amd/x64) arch=amd64 ;;
+  x32)
+    echo '[ohmyposh] x32 arch not supported' >&2
+    exit 1
+    ;;
+  esac
+  if is_android; then
+    echo 'https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-android-arm'
+    return 0
+  fi
+
+  echo "https://cdn.ohmyposh.dev/releases/latest/posh-$os-$arch$([ $os == windows ] && echo .exe)"
+}
+
 if ! $force && command_exists oh-my-posh; then
   echo '[ohmyposh] already installed'
 else
-  if [[ -d "$install_dir" ]]; then
-    old_install_dir="${install_dir}_old"
-    mv "$install_dir" "$old_install_dir"
-  fi
-
-  echo '[ohmyposh] running install script'
-
-  if [[ $(get_os) == 'windows' ]]; then
-    if ! command_exists powershell; then
-      echo '[ohmyposh] no powershell and ur on windows? that aint right' >&2
-      exit 1
-    fi
-    powershell "$config_dir/Install-OMP.ps1" -InstallDir "$(convert_path_if_needed --windows "$install_dir")"
-  else
-    mkdir -p "$install_dir"
-    curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$install_dir"
-  fi
-
-  if (($? == 0)); then
-    if [[ -v old_install_dir ]]; then
-      rm -fr "$old_install_dir"
-    fi
-    register ohmyposh '' "$install_dir" # Empty version 'cause it's not really that important
-  else
-    if [[ -v old_install_dir ]]; then
-      mv "$old_install_dir" "$install_dir"
-    fi
+  echo "[ohmyposh] downloading"
+  url=$(get_download_url)
+  tmp=$(download "$url") || {
+    echo '[ohmyposh] download failed' >&2
     exit 1
+  }
+
+  mkdir -p "$install_dir"
+  mv "$tmp" "$install_dir/oh-my-posh"
+  chmod +x "$install_dir/oh-my-posh"
+  if [[ "$tmp" == *.exe ]]; then
+    mv "$install_dir/oh-my-posh" "$install_dir/oh-my-posh.exe"
   fi
+  rm -f "$tmp"
+
+  register ohmyposh '' "$install_dir"
 fi

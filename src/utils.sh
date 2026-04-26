@@ -9,36 +9,50 @@ register() { "$REGISTER_SH" "$@"; }
 # returns 'windows' | 'linux' | 'mac'
 get_os() {
   if grep -qEi "(Microsoft|WSL|MSYS)" /proc/version &>/dev/null; then
-    echo 'windows'
-  elif [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "freebsd"* ]]; then
-    echo 'linux'
-  elif [[ "$OSTYPE" == "darwin"* ]]; then
-    echo 'mac'
-  elif [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-    echo 'windows'
+    echo windows
   else
-    echo 'could not determine os. please define $OSTYPE' >&2
-    exit 1
+    case "$OSTYPE" in
+    darwin*) echo mac ;;
+    solaris* | linux* | bsd* | freebsd*) echo linux ;;
+    msys* | cygwin* | win32*) echo windows ;;
+    *)
+      echo 'could not determine os. please define OSTYPE' >&2
+      exit 1
+      ;;
+    esac
   fi
 }
 
-# returns 'amd/x64' | 'x32' | 'arm'
+# returns 'amd/x64' | 'x32' | 'arm' | 'arm64'
 get_arch() {
-  archs=($(uname -m) $(arch))
-  for arch in "${archs[@]}"; do
-    if [[ $arch == x86_64* ]]; then
-      echo 'amd/x64'
-    elif [[ $arch == i*86 ]]; then
-      echo 'x32'
-    elif [[ $arch == arm* ]]; then
-      echo 'arm'
-    else
-      continue
-    fi
-    return
-  done
-  echo 'could not determine sys architecture' >&2
-  exit 1
+  local arch=
+  if command_exists uname; then
+    case "$(uname -m | tr '[:upper:]' '[:lower:]')" in
+    x86_64) arch=amd/x64 ;;
+    armv*) arch=arm ;;
+    arm64 | aarch64) arch=arm64 ;;
+    esac
+  fi
+  if [[ -z "$arch" ]] && command_exists arch; then
+    case "$(arch)" in
+    x86_64*) arch=amd/x64 ;;
+    i*86) arch=x32 ;;
+    arm*) arch=arm ;;
+    esac
+  fi
+  if [[ -z "$arch" ]]; then
+    echo 'could not determine arch.' >&2
+    exit 1
+  fi
+
+  if [ "${arch}" = "arm64" ] && command_exists getconf && [ "$(getconf LONG_BIT)" -eq 32 ]; then
+    arch=arm
+  fi
+  echo "$arch"
+}
+
+is_android() {
+  [[ "$PREFIX" == *com.termux* ]] || command_exists termux-setup-storage
 }
 
 command_exists() {
@@ -93,16 +107,20 @@ make_directory_link() {
   fi
 }
 
+download() {
+  local url=$1
+  local tmp=$(mktemp)
+  curl --ssl-revoke-best-effort --fail -L -o "$tmp" "$url"
+  echo "$tmp"
+}
+
 # returns with 0 if success, 1 if download failed, 2 if extract failed
 download_and_extract() {
   local url=$1
   local outdir=$2
   local archive_type=$3 # "zip" | "tar"; optional, falls back to url filename
-  local tmp=$(mktemp)
 
-  if ! curl --ssl-revoke-best-effort --fail -L -o "$tmp" "$url"; then
-    return 1
-  fi
+  local tmp=$(download "$url") || return 1
 
   if [[ "$archive_type" == '' ]]; then
     case "$url" in

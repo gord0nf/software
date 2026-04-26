@@ -14,7 +14,7 @@ if [[ -f "$SOFTWARE/software.csv" ]]; then
     if ((skip_headers)); then
       ((skip_headers--))
     else
-      IFS='|' read -ra paths <<<"$paths"
+      paths=${paths//|/ }
       for path in "${paths[@]}"; do
         export PATH="$PATH:$(convert_path_if_needed --unix "$path")"
       done
@@ -37,7 +37,13 @@ prettypath() { echo "${PATH//:/$'\n'}"; }
 ### Cool command prompt ---------------------------------------------------------------------------
 
 if command_exists oh-my-posh; then
-  eval "$(oh-my-posh init bash --config 'half-life')"
+  for conf in custom half-life takuya; do
+    conf="$SOFTWARE/src/config/ohmyposh/$conf.omp.json"
+    if [[ -f "$conf" ]]; then
+      eval "$(oh-my-posh init bash --config "$conf")"
+      break
+    fi
+  done
 fi
 
 ### If in git bash on windows, prefer unix tools --------------------------------------------------

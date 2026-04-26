@@ -210,7 +210,9 @@ if ($env:EDITOR -like 'code*') {
 # Cool command prompt -----------------------------------------------------------------------------
 
 if (Test-Binary oh-my-posh) {
-	$OMPConfig = "$PSScriptRoot\..\ohmyposh\config.json"
-	if (!(Test-Path "$OMPConfig")) { $OMPConfig = 'takuya' }
-	oh-my-posh init pwsh --config "$OMPConfig" | Invoke-Expression
+	$ompConfig = "custom", "takuya", "half-life" | 
+    ForEach-Object { "$PSScriptRoot\..\ohmyposh\$_.omp.json" } |
+    Where-Object { Test-Path $_ } |
+    Select-Object -First 1
+	oh-my-posh init pwsh --config "$ompConfig" | Invoke-Expression
 }

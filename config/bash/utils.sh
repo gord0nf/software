@@ -32,3 +32,15 @@ deprioritize_paths() {
   # echo "$pathlines"
   echo "${pathlines//$'\n'/:}"
 }
+
+convert_path_if_needed() {
+  local target_switch=$1
+  local path=$2
+  if command_exists wslpath; then
+    echo "$(wslpath $target_switch "$path")"
+  elif command_exists cygpath; then
+    echo "$(cygpath $target_switch "$path")"
+  else
+    echo "$path"
+  fi
+}

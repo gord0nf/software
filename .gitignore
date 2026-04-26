@@ -1,6 +1,7 @@
 # core stuff
 installed/
 software.csv
+0
 
 # neovim
 **/lazy-lock.json

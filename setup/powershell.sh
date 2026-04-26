@@ -40,8 +40,8 @@ for powershell in "${flavors[@]}"; do
 
   profile=$(convert_path_if_needed --unix "$(eval "$powershell -NoProfile -Command 'Write-Host \$PROFILE'")")
   if ! [[ -f "$profile" ]]; then
-    echo "[powershell] PS profile file doesn't exist: $profile" >&2
-    exit 1
+    echo "[powershell] PS profile file doesn't exist, so creating: $profile" >&2
+    mkdir -p "$(dirname "$profile")" && touch "$profile"
   fi
 
   echo "[powershell] making sure '$profile' sources config"

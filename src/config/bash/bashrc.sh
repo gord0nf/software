@@ -1,7 +1,10 @@
 profiledir=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
-. "$profiledir/utils.sh"
+source "$profiledir/utils.sh"
+source "$profiledir/aliases.sh"
 
+export TERM=xterm-256color
 export CLICOLOR=1
+export LSCOLORS=ExFxBxDxCxegedabagacad
 export LANG="en_US.UTF-8"
 
 export SOFTWARE="$(realpath "$profiledir/../../../")" # @gord0nf/software specific
@@ -22,18 +25,6 @@ if [[ -f "$SOFTWARE/software.csv" ]]; then
   done <"$SOFTWARE/software.csv"
 fi
 
-### Aliases ---------------------------------------------------------------------------------------
-
-alias rm="rm -i"
-alias mv="mv -i"
-alias cp="cp -i"
-
-alias ls="ls --color=auto"
-alias ll="ls -alh"
-alias l="ll"
-
-prettypath() { echo "${PATH//:/$'\n'}"; }
-
 ### Cool command prompt ---------------------------------------------------------------------------
 
 if command_exists oh-my-posh; then
@@ -45,8 +36,3 @@ if command_exists oh-my-posh; then
     fi
   done
 fi
-
-### If in git bash on windows, prefer unix tools --------------------------------------------------
-
-# winpath_pattern='\/[a-zA-Z]\/[Ww]indows.*'
-# export PATH=$(deprioritize_paths "$winpath_pattern" "$PATH")

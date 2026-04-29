@@ -185,6 +185,11 @@ function Get-MissingDllDeps {
 }
 	
 Set-Alias l Get-AllChildItems
+if (Test-Path Alias:cd) { Remove-Item alias:cd }
+function cd {
+    param([string]$path = $HOME)
+    Set-Location $path
+}
 Set-Alias e Start-Explorer
 Set-Alias zip Compress-Archive 	
 Set-Alias unzip Expand-Archive

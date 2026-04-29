@@ -47,7 +47,7 @@ if (($powershellPath -eq $null) -or !(Test-Path $powershellPath)) {
 }
 
 Set-EnvironmentVars @{
-    SOFTWARE = "$PSScriptRoot\..\..\.." #@gord0nf/software
+    SOFTWARE = "$PSScriptRoot\..\.." #@gord0nf/software
     REPOS    = "$HOME\dev\repos" # something i like
     HIST     = (Get-PSReadLineOption).HistorySavePath
     SHELL    = "$powershellPath"

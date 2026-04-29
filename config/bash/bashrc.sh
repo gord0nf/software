@@ -7,7 +7,7 @@ export CLICOLOR=1
 export LSCOLORS=ExFxBxDxCxegedabagacad
 export LANG="en_US.UTF-8"
 
-export SOFTWARE="$(realpath "$profiledir/../../../")" # @gord0nf/software specific
+export SOFTWARE="$(realpath "$profiledir/../../")" # @gord0nf/software specific
 
 ### Path ------------------------------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ fi
 
 if command_exists oh-my-posh; then
   for conf in custom half-life takuya; do
-    conf="$SOFTWARE/src/config/ohmyposh/$conf.omp.json"
+    conf="$SOFTWARE/config/ohmyposh/$conf.omp.json"
     if [[ -f "$conf" ]]; then
       eval "$(oh-my-posh init bash --config "$conf")"
       break

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # A `thing` is a software tool or some other, well, thing. Each thing should have a setup script
-# at `src/setup/{THING}.sh`, and any config stuff in `src/config/{THING}/` (optional). The setup script
-# sets the thing up and links anything in `src/config/{THING}`. Each setup script has independent usage
+# at `src/setup/{THING}.sh`, and any config stuff in `config/{THING}/` (optional). The setup script
+# sets the thing up and links anything in `config/{THING}`. Each setup script has independent usage
 # like `{THING}.sh <config_dir> <install_dir> [--force]`
 
 SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
@@ -106,7 +106,7 @@ fi
 
 for thing in "${things[@]}"; do
   thing_script="$SOFTWARE_ROOT/src/setup/$thing.sh"
-  thing_config="$SOFTWARE_ROOT/src/config/$thing"
+  thing_config="$SOFTWARE_ROOT/config/$thing"
   thing_install="$SOFTWARE_ROOT/installed/$thing"
 
   log "thing: $thing"

@@ -1,17 +1,12 @@
 #!/bin/bash
 
-# A `thing` is a software tool or some other, well, thing. Each thing should have a setup script
-# at `src/setup/{THING}.sh`, and any config stuff in `config/{THING}/` (optional). The setup script
-# sets the thing up and links anything in `config/{THING}`. Each setup script has independent usage
-# like `{THING}.sh <config_dir> <install_dir> [--force]`
-
 SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-HELP='usage: setup.sh [--force|-f] [--all|-a] ...(things or setup scripts)'
+HELP='usage: setup.sh [--force|-f] [--all|-a] ...(things or setup scripts or presets)'
 
 # logging
 THING=software
 PREFIX_FORMAT='%s:'
-. "$SOFTWARE_ROOT/src/log.sh"
+. "$SOFTWARE_ROOT/log.sh"
 
 is_script() {
   [[ -f "$1" ]] && IFS= LC_ALL=C read -rN2 shebang <"$1" && [ "$shebang" = '#!' ]
@@ -24,7 +19,7 @@ has_element() {
 }
 
 add_thing() {
-  if [[ -f "$SOFTWARE_ROOT/src/setup/$1.sh" ]]; then
+  if [[ -f "$SOFTWARE_ROOT/install/$1.sh" ]]; then
     ! has_element things "$1" && things+=("$1")
   else
     return 1
@@ -72,7 +67,7 @@ while (($# > 0)); do
     shift
     ;;
   --all | -a)
-    for f in "$SOFTWARE_ROOT/src/setup/"*.sh; do
+    for f in "$SOFTWARE_ROOT/install/"*.sh; do
       thing=$(basename -s '.sh' "$f")
       if ! has_element things "$thing"; then
         things+=("$thing")
@@ -105,19 +100,28 @@ if ! [[ -d "$SOFTWARE_ROOT/installed" ]]; then
 fi
 
 for thing in "${things[@]}"; do
-  thing_script="$SOFTWARE_ROOT/src/setup/$thing.sh"
-  thing_config="$SOFTWARE_ROOT/config/$thing"
-  thing_install="$SOFTWARE_ROOT/installed/$thing"
+  [[ "$thing" != "${things[0]}" ]] && echo # separation line
 
-  log "thing: $thing"
-  bash "$thing_script" "$thing_config" "$thing_install" $force
-  log_result "'$thing' setup"
-  echo # style
+  thing_install="$SOFTWARE_ROOT/install/$thing.sh"
+  thing_config="$SOFTWARE_ROOT/config/$thing.sh"
+  thing_install_dir="$SOFTWARE_ROOT/installed/$thing"
+
+  log "$thing: installing"
+  bash "$thing_install" "$thing_install_dir" $force && log_result "$thing install" || {
+    log_result "$thing install"
+    continue
+  }
+
+  if [[ -e "$thing_config" ]]; then
+    log "$thing: configuring"
+    bash "$thing_config" $force
+    log_result "$thing config"
+  fi
 done
 
 for script in "${other_scripts[@]}"; do
   log "script: $script"
-  bash "$script" '' '' $force
+  bash "$script" '' $force
   log_result "$script"
   echo # style
 done

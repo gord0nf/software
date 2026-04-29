@@ -1,13 +1,16 @@
 #!/bin/bash
 
-config_dir=$1
+force=false
+if [[ "$1" == '--force' ]]; then
+  force=true
+fi
 
 THING=powershell
-UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
-if ! source "$UTILS"; then
-  echo "fatal: couldn't source $UTILS" >&2
+CONFIG="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$THING"
+source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
+  echo "fatal: couldn't source utils" >&2
   exit 1
-fi
+}
 
 flavors=()
 if [[ $(get_os) == 'windows' ]]; then
@@ -18,19 +21,6 @@ command_exists pwsh && flavors+=("pwsh")
 ((${#flavors[@]})) || fatal 'no powershell or pwsh installation found. go install one...'
 
 for powershell in "${flavors[@]}"; do
-
-  # Initial setup
-
-  case $powershell in
-  powershell)
-    log 'running initial setup for Windows PowerShell'
-    powershell -NoProfile "$config_dir/Setup-WindowsPowershell.ps1"
-    ;;
-  # TODO pwsh)
-  esac
-
-  # Profile
-
   profile=$(convert_path_if_needed --unix "$(eval "$powershell -NoProfile -Command 'Write-Host \$PROFILE'")")
   if ! [[ -f "$profile" ]]; then
     warn "PS profile file doesn't exist, so creating: $profile"
@@ -39,6 +29,5 @@ for powershell in "${flavors[@]}"; do
 
   log "making sure '$profile' sources config"
   sed -i '/#@gord0nf\/software/d' "$profile" &>/dev/null # clean all lines with special comment
-  echo ". '$(convert_path_if_needed --windows "$config_dir/PowerShell_profile.ps1")' #@gord0nf/software" >>"$profile"
-
+  echo ". '$(convert_path_if_needed --windows "$CONFIG/PowerShell_profile.ps1")' #@gord0nf/software" >>"$profile"
 done

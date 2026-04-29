@@ -1,17 +1,16 @@
 #!/bin/bash
 
-install_dir=$2
+install_dir=$1
 force=false
-if [[ "$3" == '--force' ]]; then
+if [[ "$2" == '--force' ]]; then
   force=true
 fi
 
 THING=java
-UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
-if ! source "$UTILS"; then
-  echo "fatal: couldn't source $UTILS" >&2
+source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
+  echo "fatal: couldn't source utils" >&2
   exit 1
-fi
+}
 
 MAJOR_VERSION=25
 

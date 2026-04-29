@@ -1,16 +1,35 @@
 # dev configuration
 
-## setup a software
+## usage
 
 ```bash
-thing=bash # or any other tool in `setup/`
-bash ./setup.sh $thing
+# install if not already installed and configure
+bash ./setup.sh powershell ohmyposh # or any other thing in src/setup/
+
+# or run the install script directly
+bash ./src/setup/ohmyposh.sh <install_dir> [--force]
+
+# or just configure it (hopefully it's installed!)
+bash ./configs/ohmyposh/config.sh
 ```
 
 ### ...but i'm on Windows!
 
-well, i'm guessing that you cloned this repo using `git`... `git` for Windows adds Mingw `bash`
-during installation.
+two options to get bash on windows:
 
-if you don't have git bash installed, or you're on unix and don't have bash, you can run
-the corresponding script in `bootstrap/`
+- Git for Windows installs bash (uses MinGW)
+- Install MSYS2
+
+to quickly use this repo on windows:
+
+- download [win_bootstrap.ps1](https://raw.githubusercontent.com/gord0nf/software/refs/heads/main/win_bootstrap.ps1)
+- run it to install Git for Windows
+- clone this repo and use Git Bash
+
+## organization
+
+A `thing` is a software or some other tool. Each thing should have an install script at
+`install/{THING}.sh`. A thing can also have config stuff in `config/{THING}/`, in which case
+it must have a config script at `config/{THING}.sh` that links up anything in the directory.
+Each install script has independent usage like `{THING}.sh <install_dir> [--force]` and each
+config script has independent usage like `{THING}.sh [--force]`.

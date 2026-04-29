@@ -1,18 +1,18 @@
 #!/bin/bash
 
-config_dir=$1
-install_dir=$2
+# unfinished
+
+install_dir=$1
 force=false
-if [[ "$3" == '--force' ]]; then
+if [[ "$2" == '--force' ]]; then
   force=true
 fi
 
 THING=eclipse
-UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
-if ! source "$UTILS"; then
-  echo "fatal: couldn't source $UTILS" >&2
+source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
+  echo "fatal: couldn't source utils" >&2
   exit 1
-fi
+}
 
 get_version() {
   curl 'https://www.eclipse.org/downloads/packages/release' |

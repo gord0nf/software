@@ -1,21 +1,20 @@
 #!/bin/bash
 
-config_dir=$1
 force=false
-if [[ "$3" == '--force' ]]; then
+if [[ "$1" == '--force' ]]; then
   force=true
 fi
 
 THING=winterm
-UTILS="$(dirname "${BASH_SOURCE[0]}")/../utils.sh"
-if ! source "$UTILS"; then
-  echo "fatal: couldn't source $UTILS" >&2
+CONFIG="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$THING"
+source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
+  echo "fatal: couldn't source utils" >&2
   exit 1
-fi
+}
 
 os=$(get_os)
 [[ "$os" == 'windows' ]] || fatal "winterm is for windows (os=$os)"
-command_exists wt || fatal 'no wt installation found'
+! $force && ! command_exists wt && fatal 'not installed'
 
 settings_locations=(
   "$LOCALAPPDATA/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe"
@@ -33,4 +32,4 @@ done
 [[ -z "$settings_dir" ]] && fatal 'could not find wt settings dir'
 
 log "creating directory link from '$settings_dir' to config"
-make_directory_link "$config_dir" "$settings_dir" $force
+make_directory_link "$CONFIG" "$settings_dir" $force

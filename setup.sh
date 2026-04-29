@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-HELP='usage: setup.sh [--force|-f] [--all|-a] ...(things or setup scripts or presets)'
+HELP='usage: setup.sh [--config-only|-c] [--force|-f] [--all|-a] ...(things or setup scripts or presets)'
 
 # logging
 THING=software
@@ -52,6 +52,7 @@ load_preset() {
   done <"$preset_path"
 }
 
+install=true
 force=
 things=()
 other_scripts=()
@@ -61,6 +62,10 @@ while (($# > 0)); do
   --help | -h)
     echo "$HELP"
     exit
+    ;;
+  --config-only | -c)
+    install=false
+    shift
     ;;
   --force | -f)
     force='--force'
@@ -106,16 +111,20 @@ for thing in "${things[@]}"; do
   thing_config="$SOFTWARE_ROOT/config/$thing.sh"
   thing_install_dir="$SOFTWARE_ROOT/installed/$thing"
 
-  log "$thing: installing"
-  bash "$thing_install" "$thing_install_dir" $force && log_result "$thing install" || {
-    log_result "$thing install"
-    continue
-  }
+  if $install; then
+    log "$thing: installing"
+    bash "$thing_install" "$thing_install_dir" $force && log_result "$thing install" || {
+      log_result "$thing install"
+      continue
+    }
+  fi
 
   if [[ -e "$thing_config" ]]; then
     log "$thing: configuring"
     bash "$thing_config" $force
     log_result "$thing config"
+  elif ! $install; then
+    log "no config for $thing"
   fi
 done
 

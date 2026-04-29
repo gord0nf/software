@@ -68,6 +68,11 @@ command_exists() {
   return 1
 }
 
+# git bash on windows is iffy about detecting junctions as existing using just [ -e ... ]
+item_exists() {
+  [[ -e "$1" ]] || ls "$1" &> /dev/null
+}
+
 convert_path_if_needed() {
   local target_switch=$1
   local path=$2
@@ -81,14 +86,14 @@ convert_path_if_needed() {
 }
 
 make_directory_link() {
-  local actual=$1
-  local link=$2
+  local actual=$(convert_path_if_needed --unix "$1")
+  local link=$(convert_path_if_needed --unix "$2")
   local force=false
   if [[ "$1" == true ]]; then
     force=true
   fi
 
-  if [[ -e "$link" ]]; then
+  if item_exists "$link"; then
     if ! $force; then
       echo "mklink: something's already at link '$link'"
       read -p "mklink: want to replace it? (y/n) [n] " yn
@@ -176,7 +181,7 @@ atomic_download_and_extract() {
     force=true
   fi
 
-  if [[ -e "$outdir" ]] && ! $force; then
+  if item_exists "$outdir" && ! $force; then
     echo "extract: something's already at outdir '$outdir'"
     read -p "extract: want to replace it? (y/n) [n] " yn
     case $yn in
@@ -187,13 +192,13 @@ atomic_download_and_extract() {
 
   download_and_extract "$url" "$tmpoutdir" "$archive_type" || {
     local exitstatus=$?
-    if [[ -e "$tmpoutdir" ]]; then
+    if item_exists "$tmpoutdir"; then
       rm -fr "$tmpoutdir"
     fi
     return $exitstatus
   }
 
-  if [[ -e "$outdir" ]]; then
+  if item_exists "$outdir"; then
     rm -fr "$outdir"
   fi
   mv "$tmpoutdir" "$outdir"

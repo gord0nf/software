@@ -9,7 +9,7 @@ fi
 register() { "$REGISTER_SH" "$@"; }
 
 # logging functions
-. "$SOFTWARE_SRC/log.sh"
+! [[ -z "$THING" ]] && source "$SOFTWARE_SRC/log.sh"
 
 # returns 'windows' | 'linux' | 'mac'
 get_os() {
@@ -70,7 +70,7 @@ command_exists() {
 
 # git bash on windows is iffy about detecting junctions as existing using just [ -e ... ]
 item_exists() {
-  [[ -e "$1" ]] || ls "$1" &> /dev/null
+  [[ -e "$1" ]] || ls "$1" &>/dev/null
 }
 
 convert_path_if_needed() {

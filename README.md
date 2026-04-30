@@ -28,8 +28,19 @@ to quickly use this repo on windows:
 
 ## organization
 
-A `thing` is a software or some other tool. Each thing should have an install script at
-`install/{THING}.sh`. A thing can also have config stuff in `config/{THING}/`, in which case
-it must have a config script at `config/{THING}.sh` that links up anything in the directory.
-Each install script has independent usage like `{THING}.sh <install_dir> [--force]` and each
-config script has independent usage like `{THING}.sh [--force]`.
+this repo automates the install and configuration of `thing`s. a `thing` is a software or some
+other tool.
+
+each thing has:
+
+- `install/{MANAGER}/{THING}.sh`: script to install that thing with the chosen manager (e.g. apt).
+  - individual usage like `{THING}.sh [<install_dir>] [--force]`
+
+- (optional) `config/{THING}/` & `config/{THING}.sh`: the directory contains any config stuffs and
+  the script is required to setup/link all the configuration to the current installation.
+  - individual usage like `{THING}.sh [--force]`
+
+things can be installed with several supported managers. if not passed into `setup.sh`, it chooses
+the first available. install scripts for all things supported by the manager are in
+`install/{MANAGER}`. each manager also defines itself and any meta functions in
+`managers/{MANAGER}.sh`.

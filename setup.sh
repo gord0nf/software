@@ -8,6 +8,8 @@ THING=software
 PREFIX_FORMAT='%s:'
 . "$SOFTWARE_ROOT/log.sh"
 
+# helper functions --------------------------------------------------------------------------------
+
 is_script() {
   [[ -f "$1" ]] && IFS= LC_ALL=C read -rN2 shebang <"$1" && [ "$shebang" = '#!' ]
 }
@@ -18,8 +20,16 @@ has_element() {
   [[ " ${arr[*]} " =~ [[:space:]]${el}[[:space:]] ]]
 }
 
+set_manager() {
+  if [[ -f "$SOFTWARE_ROOT/managers/$1.sh" ]]; then
+    manager=$1
+  else
+    return 1
+  fi
+}
+
 add_thing() {
-  if [[ -f "$SOFTWARE_ROOT/install/$1.sh" ]]; then
+  if [[ -f "$SOFTWARE_ROOT/install/$manager/$1.sh" ]]; then
     ! has_element things "$1" && things+=("$1")
   else
     return 1
@@ -52,16 +62,52 @@ load_preset() {
   done <"$preset_path"
 }
 
+# parse args --------------------------------------------------------------------------------------
+
+manager=
 install=true
 force=
 things=()
 other_scripts=()
+
+# initial pass to get manager
+for ((i = 0; i < $#; i++)); do
+  arg=${!i}
+  case "$arg" in
+  --manager | -m)
+    ((i++))
+    arg=${!i}
+    [[ -z "$arg" ]] && fatal 'expected arg for --manager'
+    set_manager "$arg" || fatal "invalid manager '$arg'"
+    ;;
+  esac
+done
+
+# if not specified, use first usable manager
+if [[ -z "$manager" ]]; then
+  for manager in $(ls "$SOFTWARE_ROOT/managers/"*.sh); do
+    manager=$(
+      source "$manager"
+      manager_can_use &>/dev/null && echo "$manager"
+    )
+    [[ -z "$manager" ]] || {
+      set_manager "$(basename -s .sh "$manager")"
+      break
+    }
+  done
+  [[ -z "$manager" ]] && fatal 'none of the managers can be used on your system'
+  log "no manager specified, defaulting to $manager"
+fi
 
 while (($# > 0)); do
   case "$1" in
   --help | -h)
     echo "$HELP"
     exit
+    ;;
+  --manager | -m)
+    shift
+    shift
     ;;
   --config-only | -c)
     install=false
@@ -72,7 +118,7 @@ while (($# > 0)); do
     shift
     ;;
   --all | -a)
-    for f in "$SOFTWARE_ROOT/install/"*.sh; do
+    for f in "$SOFTWARE_ROOT/install/$manager/"*.sh; do
       thing=$(basename -s '.sh' "$f")
       if ! has_element things "$thing"; then
         things+=("$thing")
@@ -104,10 +150,15 @@ if ! [[ -d "$SOFTWARE_ROOT/installed" ]]; then
   mkdir "$SOFTWARE_ROOT/installed"
 fi
 
+# run scripts -------------------------------------------------------------------------------------
+
+source "$SOFTWARE_ROOT/managers/$manager.sh"
+manager_can_use || fatal "cannot use $manager manager on your system"
+
 for thing in "${things[@]}"; do
   [[ "$thing" != "${things[0]}" ]] && echo # separation line
 
-  thing_install="$SOFTWARE_ROOT/install/$thing.sh"
+  thing_install="$SOFTWARE_ROOT/install/$manager/$thing.sh"
   thing_config="$SOFTWARE_ROOT/config/$thing.sh"
   thing_install_dir="$SOFTWARE_ROOT/installed/$thing"
 

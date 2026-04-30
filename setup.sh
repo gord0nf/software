@@ -154,6 +154,7 @@ fi
 
 source "$SOFTWARE_ROOT/managers/$manager.sh"
 manager_can_use || fatal "cannot use $manager manager on your system"
+command_exists manager_preinstall && manager_preinstall
 
 for thing in "${things[@]}"; do
   [[ "$thing" != "${things[0]}" ]] && echo # separation line

@@ -1,6 +1,6 @@
 - add software:
   - ffmpeg
   - github-cli
-  - python
   - vscode
   - firefox (with profiles)
+- vim install manually

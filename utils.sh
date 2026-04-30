@@ -89,7 +89,7 @@ make_directory_link() {
   local actual=$(convert_path_if_needed --unix "$1")
   local link=$(convert_path_if_needed --unix "$2")
   local force=false
-  if [[ "$1" == true ]]; then
+  if [[ "$3" == true ]]; then
     force=true
   fi
 

@@ -34,7 +34,7 @@ get_download_url() {
   esac
   case "$(get_arch)" in
   amd/x64) arch=x64 ;;
-  arm) arch=arm64 ;;
+  arm*) arch=arm64 ;;
   x32) fatal 'arch not supported' ;;
   esac
 

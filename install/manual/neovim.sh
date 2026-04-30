@@ -32,7 +32,7 @@ get_download_url() {
     ;;
   esac
   case "$(get_arch)" in
-  arm) arch=-arm64 ;;
+  arm*) arch=-arm64 ;;
   *)
     if [[ $os == win ]]; then
       arch=64

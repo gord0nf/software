@@ -38,7 +38,7 @@ get_download_url() {
   esac
   case "$(get_arch)" in
   amd/x64) arch=amd64 ;;
-  arm) arch=arm64 ;;
+  arm*) arch=arm64 ;;
   x32) arch=386 ;;
   esac
 

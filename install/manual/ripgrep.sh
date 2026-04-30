@@ -42,7 +42,7 @@ get_download_url() {
       comp=-musl
     fi
     ;;
-  arm) arch=aarch64 ;; # armv7 also available, but im lazy
+  arm*) arch=aarch64 ;; # armv7 also available, but im lazy
   x32) arch=i686 ;;
   esac
 

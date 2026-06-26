@@ -30,3 +30,22 @@ make_directory_link "$CONFIG" "$tmux_dir"
 log 'making sure ~/.tmux.conf sources'
 src_line="source-file $tmux_dir/tmux.conf"
 grep -qxF "$src_line" ~/.tmux.conf &>/dev/null || echo "$src_line" >>~/.tmux.conf
+
+# extra configuration -----------------------------------------------------------------------------
+
+sed -i '/#@gord0nf\/software/d' ~/.tmux.conf &>/dev/null # clean all lines with special comment
+
+if [[ -v ymlconf_config_tmux_theme ]]; then
+  case "$ymlconf_config_tmux_theme" in
+  github)
+    log 'applying github theme'
+    echo "set -g @plugin 'infamous55/tmux-github-theme' #@gord0nf/software" >>~/.tmux.conf
+    echo "set -g @color_variation 'dark_high_contrast' #@gord0nf/software" >>~/.tmux.conf
+    ;;
+  vscode)
+    log 'applying vscode theme'
+    echo "set -g @plugin 'evanzhoudev/onedarkpro-tmux' #@gord0nf/software" >>~/.tmux.conf
+    ;;
+  *) warn 'invalid tmux theme' ;;
+  esac
+fi

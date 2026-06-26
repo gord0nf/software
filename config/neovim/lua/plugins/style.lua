@@ -3,6 +3,9 @@ local plugins = {
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
+      options = {
+        globalstatus = Settings.theme == 'vscode',
+      },
       sections = {
         lualine_a = { 'mode' },
         lualine_b = { 'diff' },

@@ -110,34 +110,36 @@ local plugins = {
   },
 }
 
-if Settings.theme == 'vscode' then
-  table.insert(plugins, {
-    'Mofiqul/vscode.nvim',
-    config = function()
-      vim.o.background = 'dark'
+if Settings.theme then
+  if Settings.theme == 'vscode' then
+    table.insert(plugins, {
+      'Mofiqul/vscode.nvim',
+      config = function()
+        vim.o.background = 'dark'
 
-      local c = require('vscode.colors').get_colors()
-      require('vscode').setup({
-        transparent = true,
-        italic_comments = true,
-        italic_inlayhints = true,
-        underline_links = true,
-        disable_nvimtree_bg = true,
-        color_overrides = {
-          vscLineNumber = '#FFFFFF',
-        },
-        group_overrides = {
-          Cursor = { fg = c.vscDarkBlue, bg = c.vscLightGreen, bold = true },
-        },
-      })
-    end,
-  })
-elseif Settings.theme:find('github', 1, true) == 1 then
-  table.insert(plugins, {
-    'projekt0n/github-nvim-theme',
-    name = 'github-theme',
-    opts = { options = { transparent = true } },
-  })
+        local c = require('vscode.colors').get_colors()
+        require('vscode').setup({
+          transparent = true,
+          italic_comments = true,
+          italic_inlayhints = true,
+          underline_links = true,
+          disable_nvimtree_bg = true,
+          color_overrides = {
+            vscLineNumber = '#FFFFFF',
+          },
+          group_overrides = {
+            Cursor = { fg = c.vscDarkBlue, bg = c.vscLightGreen, bold = true },
+          },
+        })
+      end,
+    })
+  elseif Settings.theme:find('github', 1, true) == 1 then
+    table.insert(plugins, {
+      'projekt0n/github-nvim-theme',
+      name = 'github-theme',
+      opts = { options = { transparent = true } },
+    })
+  end
 end
 
 return plugins

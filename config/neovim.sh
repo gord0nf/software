@@ -28,34 +28,37 @@ done
   "$CONFIG/.prettierrc"
 
 # extra configuration -----------------------------------------------------------------------------
-# by creating a settings.lua file that is imported by neovim config
+# by creating a ~/.nvim.lua script that returns `settings` for config to import (looks for $NVIM_SETTINGS)
 
-settings="$CONFIG/lua/settings.lua"
-echo "Settings = {}" >"$settings"
+log 'writing settings object to ~/.nvim.lua'
+settings="$HOME/.nvim.lua"
+set_global_env NVIM_SETTINGS "$settings"
+echo "settings = {}" >"$settings"
 
 [[ "$ymlconf_config_neovim_flash" == true ]] && {
-  log 'applying flash'
-  echo "Settings.flash = true" >>"$settings"
+  log 'applying flash to settings'
+  echo "settings.flash = true" >>"$settings"
 }
 [[ "$ymlconf_config_neovim_tmux" == false ]] && {
-  log 'applying tmux'
-  echo "Settings.tmux = false" >>"$settings"
+  log 'applying tmux to settings'
+  echo "settings.tmux = false" >>"$settings"
 }
 [[ "$ymlconf_config_neovim_floatingTerminal" == true ]] && {
-  log 'applying floating terminal'
-  echo "Settings.floating_terminal = true" >>"$settings"
+  log 'applying floating terminal to settings'
+  echo "settings.floating_terminal = true" >>"$settings"
 }
 [[ -v ymlconf_config_neovim_theme ]] && {
-  log 'applying theme'
-  echo "Settings.theme = '$ymlconf_config_neovim_theme'" >>"$settings"
+  log 'applying theme to settings'
+  echo "settings.theme = '$ymlconf_config_neovim_theme'" >>"$settings"
 }
 
 langs=
 for key in $(yaml_array_keys ymlconf_config_neovim_langs_); do
   langs+="'${!key}',"
 done
-! [[ -z "$langs" ]] && {
-  log 'applying langs'
-  echo "Settings.langs = { ${langs%?} }" >>"$settings"
-}
-exit 0
+if ! [[ -z "$langs" ]]; then
+  log 'applying langs to settings'
+  echo "settings.langs = { ${langs%?} }" >>"$settings"
+fi
+
+echo "return settings" >>"$settings"

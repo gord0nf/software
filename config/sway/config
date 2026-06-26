@@ -215,6 +215,8 @@ bar {
 }
 exec $bar
 
+bindsym $mod+m bar mode toggle
+
 # window style
 default_border pixel
 

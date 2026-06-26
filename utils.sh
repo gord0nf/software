@@ -54,11 +54,13 @@ is_android() {
 }
 
 command_exists() {
-  local command=$1
-  if command -v $command &>/dev/null; then
-    return 0
-  fi
-  return 1
+  command -v "$1" &>/dev/null
+}
+
+check_executable() {
+  [[ -x "$1" || -x "$1.exe" ]] && {
+    "$1" --help &>/dev/null || "$1.exe" --help &>/dev/null
+  }
 }
 
 # git bash on windows is iffy about detecting junctions as existing using just [ -e ... ]

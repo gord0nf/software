@@ -17,10 +17,16 @@ get_latest_version() {
     sed -E 's/.*"version"\s*:\s*"([0-9]+\.[0-9]+\.[0-9]+)".*/\1/'
 }
 
+binary="$install_dir/bin/gradle"
+
 if ! $FORCE && command_exists gradle; then
   log 'already installed'
 elif ! command_exists java; then
   fatal 'java is a gradle prereq and no installation found. go get it...'
+elif ! $FORCE && check_executable "$binary"; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "$binary"
 else
   log 'finding latest version from gradle api'
   version=$(get_latest_version)
@@ -31,5 +37,5 @@ else
   log 'installing'
   url="https://services.gradle.org/distributions/gradle-$version-bin.zip"
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register "$install_dir/bin/gradle"
+  register "$binary"
 fi

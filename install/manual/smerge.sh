@@ -52,13 +52,25 @@ get_version() {
   fi
 }
 
+binaries=("$install_dir/sublime_merge" "$install_dir/smerge")
+check_bins() {
+  for bin in "${binaries[@]}"; do
+    check_executable "$bin" && return 0
+  done
+  return 1
+}
+
 if ! $FORCE && command_exists sublime_merge; then
   log 'already installed'
+elif ! $FORCE && check_bins; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "${binaries[@]}"
 else
   log 'getting url'
   url=$(get_download_url) || fatal "couldn't get url"
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register "$install_dir/sublime_merge" "$install_dir/smerge"
+  register "${binaries[@]}"
 fi

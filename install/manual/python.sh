@@ -53,8 +53,19 @@ get_download_url() {
   esac
 }
 
+binaries=("$install_dir/python" "$install_dir/pip")
+check_bins() {
+  for bin in "${binaries[@]}"; do
+    check_executable "$bin" || return 1
+  done
+}
+
 if ! $FORCE && command_exists python && python --version; then
   log 'already installed'
+elif ! $FORCE && check_bins; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "${binaries[@]}"
 else
   log 'getting current version'
   version=$(get_version) || fatal "couldn't get version number"
@@ -62,5 +73,5 @@ else
   log 'installing'
   url=$(get_download_url "$version")
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register "$install_dir/python" "$install_dir/pip"
+  register "${binaries[@]}"
 fi

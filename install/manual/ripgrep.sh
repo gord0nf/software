@@ -46,8 +46,14 @@ get_download_url() {
   echo "https://github.com/BurntSushi/ripgrep/releases/download/$version/ripgrep-$version-$arch-$os$comp.$ext"
 }
 
+binary="$install_dir/rg"
+
 if ! $FORCE && command_exists rg; then
   log 'already installed'
+elif ! $FORCE && check_executable "$binary"; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "$binary"
 else
   log 'getting version'
   version=$(get_latest_github_tag 'BurntSushi/ripgrep')
@@ -55,5 +61,5 @@ else
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register "$install_dir/rg"
+  register "$binary"
 fi

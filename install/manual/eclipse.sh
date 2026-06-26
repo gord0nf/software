@@ -43,8 +43,14 @@ get_download_url() {
   echo "https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/$version/R/eclipse-java-$version-R-$os-$arch.$ext"
 }
 
+binary="$install_dir/eclipse"
+
 if ! $FORCE && command_exists eclipse; then
   log 'already installed'
+elif ! $FORCE && check_executable "$binary"; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "$binary"
 else
   log 'getting version'
   version=$(get_version) || fatal 'failed to get version'
@@ -52,5 +58,5 @@ else
   log 'installing'
   url=$(get_download_url "$version")
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register "$install_dir/eclipse"
+  register "$binary"
 fi

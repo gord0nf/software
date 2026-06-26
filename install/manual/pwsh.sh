@@ -47,8 +47,14 @@ if (("$syspath" -split \';\') -notcontains "$newpath") {
   [System.Environment]::SetEnvironmentVariable("Path", "$syspath;$newpath", $scope)
 }'
 
+binary="$install_dir/pwsh"
+
 if ! $FORCE && command_exists pwsh; then
   log 'already installed'
+elif check_executable "$binary"; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "$binary"
 else
   log 'getting version'
   version=$(get_latest_github_tag 'PowerShell/PowerShell')
@@ -56,7 +62,7 @@ else
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register "$install_dir/pwsh"
+  register "$binary"
 
   # if windows, add to system path so it can be detected by some windows things
   if [[ $(get_os) == windows ]]; then

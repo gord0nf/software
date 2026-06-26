@@ -39,12 +39,23 @@ get_download_url() {
   echo "$url"
 }
 
+# TODO: possibly more java binaries (i cant remember)
+binaries=("$install_dir/bin/java" "$install_dir/bin/javac")
+check_bins() {
+  for bin in "${binaries[@]}"; do
+    check_executable "$bin" || return 1
+  done
+}
+
 if ! $FORCE && command_exists java; then
   log 'already installed'
+elif ! $FORCE && check_bins; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "${binaries[@]}"
 else
   log 'installing Oracle JDK'
   atomic_download_and_extract "$(get_download_url)" "$install_dir" '' ||
     fatal 'Oracle JDK install failed'
-  register "$install_dir/bin/java" "$install_dir/bin/javac"
-  # TODO: possibly more java binaries (i cant remember)
+  register "${binaries[@]}"
 fi

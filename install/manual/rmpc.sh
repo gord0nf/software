@@ -27,8 +27,14 @@ get_download_url() {
   echo "https://github.com/mierak/rmpc/releases/download/$version/rmpc-$version-$arch-$os.tar.gz"
 }
 
+binary="$install_dir/rmpc"
+
 if ! $FORCE && command_exists rmpc; then
   log 'already installed'
+elif ! $FORCE && check_executable "$binary"; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "$binary"
 else
   log 'getting version'
   version=$(get_latest_github_tag 'mierak/rmpc')
@@ -36,5 +42,5 @@ else
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register "$install_dir/rmpc"
+  register "$binary"
 fi

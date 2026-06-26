@@ -42,8 +42,14 @@ get_download_url() {
   echo "https://go.dev/dl/$version.$os-$arch.$ext"
 }
 
+binary="$install_dir/bin/go"
+
 if ! $FORCE && command_exists go; then
   log 'already installed'
+elif ! $FORCE && check_executable "$binary"; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "$binary"
 else
   log 'getting version'
   version=$(get_version)
@@ -51,5 +57,5 @@ else
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register "$install_dir/bin/go"
+  register "$binary"
 fi

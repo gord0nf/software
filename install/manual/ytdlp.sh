@@ -21,19 +21,24 @@ get_download_url() {
   echo "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp$ext"
 }
 
+binary="$install_dir/yt-dlp"
+
 if ! $FORCE && command_exists yt-dlp; then
   log 'already installed'
+elif ! $FORCE && check_executable "$binary"; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "$binary"
 else
   log 'downloading'
   url=$(get_download_url)
   tmp=$(download "$url") || fatal 'download failed'
-  target="$install_dir/yt-dlp"
 
   mkdir -p "$install_dir"
-  mv "$tmp" "$target"
-  chmod +x "$target"
-  [[ "$tmp" == *.exe ]] && mv "$target" "$target.exe"
+  mv "$tmp" "$binary"
+  chmod +x "$binary"
+  [[ "$tmp" == *.exe ]] && mv "$binary" "$binary.exe"
   rm -f "$tmp"
 
-  register "$target"
+  register "$binary"
 fi

@@ -24,8 +24,14 @@ get_windows_download_url() {
   echo "https://github.com/vim/vim-win32-installer/releases/download/$tag/gvim_${tag:1}_$arch.zip"
 }
 
+binary="$install_dir/vim"
+
 if ! $FORCE && command_exists vim; then
   log 'already installed'
+elif ! $FORCE && check_executable "$binary"; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "$binary"
 else
   case $(get_os) in
   windows)
@@ -35,7 +41,7 @@ else
     log 'installing'
     url=$(get_windows_download_url "$version")
     atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-    register "$install_dir/vim"
+    register "$binary"
     ;;
 
   linux) # TODO: actually test this... or find somewhere reliable that has the binaries!

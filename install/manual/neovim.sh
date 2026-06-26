@@ -52,8 +52,14 @@ install_win32_make() {
   rm -fr "$tmpdir"
 }
 
+binary="$install_dir/bin/nvim"
+
 if ! $FORCE && command_exists nvim; then
   log 'already installed'
+elif ! $FORCE && check_executable "$binary"; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "$binary"
 else
   log 'getting version'
   version=$(get_latest_github_tag 'neovim/neovim')
@@ -61,7 +67,7 @@ else
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register "$install_dir/bin/nvim"
+  register "$binary"
 fi
 
 # since some neovim stuff needs make, so if on windows, get it

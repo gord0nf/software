@@ -27,8 +27,14 @@ get_download_url() {
   echo "https://cdn.ohmyposh.dev/releases/latest/posh-$os-$arch$([ $os == windows ] && echo .exe)"
 }
 
+binary="$install_dir/oh-my-posh"
+
 if ! $FORCE && command_exists oh-my-posh; then
   log 'already installed'
+elif ! $FORCE && check_executable "$binary"; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "$binary"
 else
   log 'downloading'
   url=$(get_download_url)
@@ -42,5 +48,5 @@ else
   fi
   rm -f "$tmp"
 
-  register "$install_dir/oh-my-posh"
+  register "$binary"
 fi

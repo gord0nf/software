@@ -38,8 +38,19 @@ get_download_url() {
   echo "https://nodejs.org/dist/$version/node-$version-$os-$arch.$ext"
 }
 
+binaries=("$install_dir/node" "$install_dir/npm")
+check_bins() {
+  for bin in "${binaries[@]}"; do
+    check_executable "$bin" || return 1
+  done
+}
+
 if ! $FORCE && command_exists node; then
   log 'already installed'
+elif ! $FORCE && check_bins; then
+  log 'already installed, just not registered'
+  log 'registering'
+  register "${binaries[@]}"
 else
   log 'getting version'
   version=$(get_latest_github_tag 'nodejs/node')
@@ -47,5 +58,5 @@ else
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register "$install_dir/node" "$install_dir/npm"
+  register "${binaries[@]}"
 fi

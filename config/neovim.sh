@@ -10,18 +10,12 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
 
 ! $FORCE && ! command_exists nvim && fatal 'not installed'
 
-default_nvim_dirs=(
-  "$HOME/.config/nvim"
-  "$HOME/AppData/Local/nvim"
-)
+dir="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
+[[ $(get_os) == windows ]] && dir="$LOCALAPPDATA/nvim"
 
-# create link from default nvim dir(s) to config
-for nvim_dir in "${default_nvim_dirs[@]}"; do
-  if [[ -d "$(dirname "$nvim_dir")" ]]; then
-    log "creating directory link from '$nvim_dir' to config"
-    make_directory_link "$CONFIG" "$nvim_dir"
-  fi
-done
+# create link from nvim dir to config
+log "creating directory link from '$dir' to config"
+make_directory_link "$CONFIG" "$dir"
 
 # set default prettier
 [[ -v PRETTIERD_DEFAULT_CONFIG ]] || set_global_env PRETTIERD_DEFAULT_CONFIG \

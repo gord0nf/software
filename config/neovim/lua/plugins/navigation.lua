@@ -63,7 +63,7 @@ local plugins = {
       {
         '<leader>e',
         function()
-          MiniFiles.open()
+          require('mini.files').open()
         end,
         desc = 'MiniFiles open',
       },

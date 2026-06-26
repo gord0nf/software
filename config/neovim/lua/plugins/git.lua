@@ -1,8 +1,8 @@
 return {
   {
     'lewis6991/gitsigns.nvim',
-    config = function()
-      require('gitsigns').setup({})
-    end,
+    keys = {
+      { '<leader>gd', '<cmd>Gitsigns diffthis<cr>', desc = 'Open diffsplit with git index' },
+    },
   },
 }

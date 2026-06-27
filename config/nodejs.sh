@@ -2,7 +2,7 @@
 
 FORCE="${FORCE:-false}"
 THING=nodejs
-CONFIG="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$THING"
+SOFTWARE="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/.."
 source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
   echo "fatal: couldn't source utils" >&2
   exit 1
@@ -21,4 +21,4 @@ add_global_path "$npm_prefix/bin" --force
 
 # set default prettier
 [[ -v PRETTIERD_DEFAULT_CONFIG ]] || set_global_env PRETTIERD_DEFAULT_CONFIG \
-  "$CONFIG/../neovim/.prettierrc"
+  "$(realpath "$SOFTWARE/.prettierrc")"

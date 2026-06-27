@@ -92,7 +92,7 @@ Set-EnvVars_pf @{
 if (Test-Binary_pf java) {
   Set-EnvVars_pf @{ JAVA_HOME = "$(Split-Path (Get-Command java).Path)/.." }
 }
-Set-EnvVars_pf @{ PRETTIERD_DEFAULT_CONFIG = "$env:SOFTWARE/config/nodejs/prettierrc.json" }
+Set-EnvVars_pf @{ PRETTIERD_DEFAULT_CONFIG = "$env:SOFTWARE/.prettierrc" }
 
 # Aliases -----------------------------------------------------------------------------------------
 

@@ -42,32 +42,30 @@ to quickly use this repo on windows:
 
 ## organization
 
-this repo automates the install and configuration of `thing`s. a `thing` is a
-software or some other tool.
+this repo automates the install and configuration of `thing`s. a `thing` is a software or some other
+tool.
 
 each thing has:
 
-- `install/{MANAGER}/{THING}.sh`: script to install that thing with the chosen
-  manager (e.g. apt).
-  - individual usage like `{THING}.sh [<install_dir>]`
-  - to force install, `FORCE=true {THING}.sh ...`
+- `install/{MANAGER}/{THING}.sh`: script to install that thing with the chosen manager (e.g. apt).
+    - individual usage like `{THING}.sh [<install_dir>]`
+    - to force install, `FORCE=true {THING}.sh ...`
 
-- (optional) `config/{THING}/` & `config/{THING}.sh`: the directory contains any
-  config stuffs and the script is required to setup/link all the configuration
-  to the current installation.
-  - individual usage like `{THING}.sh`
-  - to force install, `FORCE=true {THING}.sh`
+- (optional) `config/{THING}/` & `config/{THING}.sh`: the directory contains any config stuffs and
+  the script is required to setup/link all the configuration to the current installation.
+    - individual usage like `{THING}.sh`
+    - to force install, `FORCE=true {THING}.sh`
 
-things can be installed with several supported managers. if not passed into
-`setup.sh`, it chooses the first available. install scripts for all things
-supported by the manager are in `install/{MANAGER}`. each manager also defines
-itself and any meta functions in `managers/{MANAGER}.sh`.
+things can be installed with several supported managers. if not passed into `setup.sh`, it chooses
+the first available. install scripts for all things supported by the manager are in
+`install/{MANAGER}`. each manager also defines itself and any meta functions in
+`managers/{MANAGER}.sh`.
 
 ### yaml config
 
-a yaml config can be supplied (see `examples/`), which is useful because a
-thing's config script can look for vars loaded from yaml config and hook things
-up differently. yaml configs can extend other yaml configs.
+a yaml config can be supplied (see `examples/`), which is useful because a thing's config script can
+look for vars loaded from yaml config and hook things up differently. yaml configs can extend other
+yaml configs.
 
 if no yaml config is supplied as an arg, `setup.sh` looks for (takes first):
 
@@ -75,13 +73,11 @@ if no yaml config is supplied as an arg, `setup.sh` looks for (takes first):
 - `$SOFTWARE/_data/profiles/$(whoami).yml`
 - `$SOFTWARE/software.yml`
 
-`setup.sh` loads nested yaml config into exported shell variables like
-`ymlconf_{...}` (see `parse_yaml()` in `utils.sh`), which config scripts can
-then use.
+`setup.sh` loads nested yaml config into exported shell variables like `ymlconf_{...}` (see
+`parse_yaml()` in `utils.sh`), which config scripts can then use.
 
 yaml features:
 
 - extend other yaml configs with `extends` key
-  - can also extend something in the `presets/` dir like
-    `extends: preset:minimal`
+    - can also extend something in the `presets/` dir like `extends: preset:minimal`
 - things in setup can be installed with specific manager like `thing@manager`

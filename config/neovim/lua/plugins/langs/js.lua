@@ -61,7 +61,7 @@ return {
   formatters = {
     prettierd = {
       env = {
-        PRETTIERD_DEFAULT_CONFIG = vim.fs.joinpath(vim.fn.stdpath('config'), '.prettierrc'),
+        PRETTIERD_DEFAULT_CONFIG = vim.fs.joinpath(os.getenv('SOFTWARE'), '.prettierrc'),
       },
     },
   },

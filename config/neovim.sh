@@ -19,7 +19,7 @@ make_directory_link "$CONFIG" "$dir"
 
 # set default prettier
 [[ -v PRETTIERD_DEFAULT_CONFIG ]] || set_global_env PRETTIERD_DEFAULT_CONFIG \
-  "$CONFIG/.prettierrc"
+  "$(realpath "$CONFIG/../../.prettierrc")"
 
 # extra configuration -----------------------------------------------------------------------------
 # by creating a ~/.nvim.lua script that returns `settings` for config to import (looks for $NVIM_SETTINGS)

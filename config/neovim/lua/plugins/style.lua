@@ -140,7 +140,16 @@ if Settings.theme then
     table.insert(plugins, {
       'projekt0n/github-nvim-theme',
       name = 'github-theme',
-      opts = { options = { transparent = true } },
+      opts = {
+        options = {
+          transparent = true,
+          styles = {
+            comments = 'italic',
+            keywords = 'bold',
+            types = 'italic,bold',
+          },
+        },
+      },
     })
   end
 end

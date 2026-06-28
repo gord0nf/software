@@ -26,14 +26,14 @@ tmux_dir="${XDG_CONFIG_HOME:-$HOME/.config}/tmux"
 log "creating directory link from '$tmux_dir' to config"
 make_directory_link "$CONFIG" "$tmux_dir"
 
+sed -i '/#@gord0nf\/software/d' ~/.tmux.conf &>/dev/null # clean all lines with special comment
+
 # make sure ~/.tmux.conf is the entry point that sources config
 log 'making sure ~/.tmux.conf sources'
 src_line="source-file $tmux_dir/tmux.conf"
-grep -qxF "$src_line" ~/.tmux.conf &>/dev/null || echo "$src_line" >>~/.tmux.conf
+echo "$src_line #@gord0nf/software" >>~/.tmux.conf
 
 # extra configuration -----------------------------------------------------------------------------
-
-sed -i '/#@gord0nf\/software/d' ~/.tmux.conf &>/dev/null # clean all lines with special comment
 
 if [[ -v ymlconf_config_tmux_theme ]]; then
   case "$ymlconf_config_tmux_theme" in

@@ -6,17 +6,30 @@
     - psmux for windows
   - bsh/zsh/powershell/pwsh
     - option to manually disable external tools (like omp) in yml
-  - cli style
-    - tee stdout to log file
-    - clear screen after each thing
   - neovim
     - componentalize and make configurable by yml
   - standardiz XDG stuff and make sure dirs exist
 - v2.1
   - practical linux applications
     - pulseaudio
-    - media player
+    - media player (mpd)
     - brave browser
+    - htop alternative (btop)
+    - music player (mpd, rmpc)
+    - yt-dlp
 - v2.2
   - make v2 setup compatible with windows
     - psmux
+    - btop4win
+    - docker
+    - mpd
+    - yt-dlp
+    - fzf? (but pwsh already has smth like it...)
+  - windows features
+    - wsl support
+    - `win-bootstrap.ps1` option to use Git Bash or wsl
+    - `setup.ps1` in root that runs bootstrap if bash doesn't exist
+  - make like a good little cli
+    - tee stdout to log file
+    - clear screen after each thing
+    - better README

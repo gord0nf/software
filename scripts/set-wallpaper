@@ -9,7 +9,7 @@ if command -v swaybg &>/dev/null; then
   if [[ -f "$wallpaper" ]]; then
     echo $(realpath --relative-to="$wallpaper_dir" "$wallpaper")
     [ -n "$TMUX" ] && runner='tmux run-shell' || runner=eval
-    $runner "swaymsg \"output * bg \"$wallpaper\" fill\""
+    $runner "swaymsg \"output * bg \"$wallpaper\" fill\"" &>/dev/null
   fi
 
 fi

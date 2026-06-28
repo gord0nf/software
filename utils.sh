@@ -53,6 +53,12 @@ is_android() {
   [[ "$PREFIX" == *com.termux* ]] || command_exists termux-setup-storage
 }
 
+is_debian() {
+  [ -f /etc/os-release ] || return 1
+  . /etc/os-release
+  [[ "$ID" == "debian" || "$ID_LIKE" == *"debian"* ]]
+}
+
 command_exists() {
   command -v "$1" &>/dev/null
 }
@@ -80,6 +86,15 @@ convert_path_if_needed() {
   fi
 }
 
+prompt_yn() {
+  read -n 1 -p "$1" yn
+  echo
+  case $yn in
+  [Yy]*) return 0 ;;
+  *) return 1 ;;
+  esac
+}
+
 make_directory_link() {
   local actual=$(convert_path_if_needed --unix "$1")
   local link=$(convert_path_if_needed --unix "$2")
@@ -88,14 +103,8 @@ make_directory_link() {
   if item_exists "$link"; then
     if ! $FORCE; then
       echo "mklink: something's already at link '$link'"
-      read -n 1 -p "mklink: want to replace it? (y/n) [n] " yn
-      echo
-      case $yn in
-      [Yy]*) ;;
-      *) exit 1 ;;
-      esac
+      prompt_yn "mklink: want to replace it? (y/n) [n] " || exit 1
     fi
-
     rm -fr "$link"
   fi
 
@@ -176,12 +185,7 @@ atomic_download_and_extract() {
 
   if item_exists "$outdir" && ! $FORCE; then
     echo "extract: something's already at outdir '$outdir'"
-    read -n 1 -p "extract: want to replace it? (y/n) [n] " yn
-    echo
-    case $yn in
-    [Yy]*) ;;
-    *) exit 1 ;;
-    esac
+    prompt_yn "extract: want to replace it? (y/n) [n] " || exit 1
   fi
 
   mkdir -p "$tmpoutdir"

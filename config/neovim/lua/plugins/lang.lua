@@ -73,10 +73,7 @@ local plugins = {
       for formatter, formatter_opts in pairs(aggregated_stuff.formatters) do
         if formatter_opts then
           formatter_opts = formatter_opts == true and {} or formatter_opts
-          if
-            (type(formatter_opts) ~= 'table' or formatter_opts.mason ~= false)
-            and vim.tbl_contains(available, formatter)
-          then
+          if type(formatter_opts) ~= 'table' or formatter_opts.mason ~= false then
             ensure_installed[#ensure_installed + 1] = formatter
           end
         end

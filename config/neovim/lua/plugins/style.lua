@@ -4,7 +4,7 @@ local plugins = {
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
       options = {
-        globalstatus = Settings.theme == 'vscode',
+        globalstatus = Settings.theme == 'vscode' or Settings.theme == 'shado',
       },
       sections = {
         lualine_a = { 'mode' },
@@ -136,6 +136,9 @@ if Settings.theme then
         })
       end,
     })
+  elseif Settings.theme == 'shado' then
+    table.insert(plugins, { 'Shadorain/shadotheme' })
+    table.insert(plugins, { 'xiyaowong/nvim-transparent', lazy = false })
   elseif Settings.theme:find('github', 1, true) == 1 then
     table.insert(plugins, {
       'projekt0n/github-nvim-theme',

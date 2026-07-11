@@ -20,7 +20,14 @@ swaylock_dir="${XDG_CONFIG_HOME:-$HOME/.config}/swaylock"
 log "creating directory link from '$swaylock_dir' to swaylock config"
 make_directory_link "$CONFIG/../swaylock" "$swaylock_dir"
 
+# gtk dark mode
+set_global_env GTK_THEME 'Adwaita:dark'
+
 # env var config ----------------------------------------------------------------------------------
+
+[[ -v ymlconf_config_sway_flavor ]] &&
+  set_global_env SWAY_FLAVOR "$ymlconf_config_sway_flavor" ||
+  set_global_env SWAY_FLAVOR -unset
 
 [[ -v ymlconf_config_sway_menu ]] &&
   set_global_env SWAYMENU "$ymlconf_config_sway_menu" ||
@@ -30,13 +37,11 @@ make_directory_link "$CONFIG/../swaylock" "$swaylock_dir"
   set_global_env SWAYBAR "$ymlconf_config_sway_bar" ||
   set_global_env SWAYBAR -unset
 
-set_global_env GTK_THEME 'Adwaita:dark'
-
 # start behavior configuration --------------------------------------------------------------------
 # ymlconf_config_sway_startBehavior should be login|prompt|manual
 
 apply_start_behavior() {
-  log "apply start behavior to $1"
+  log "applying start behavior to $1"
   sed -i '/#@gord0nf\/software/d' "$1" &>/dev/null # clean all lines with special comment
   case "$ymlconf_config_sway_startBehavior" in
   login | prompt)

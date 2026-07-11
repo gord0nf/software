@@ -48,6 +48,16 @@ bindkey '\e[1;5D' backward-word
 bindkey '\e[1;5C' forward-word
 bindkey '^H' backward-kill-word
 
+# edit command line
+autoload -U edit-command-line
+vim-command-line () {
+  local VISUAL=vim
+  edit-command-line
+}
+zle -N vim-command-line
+bindkey '^xe' vim-command-line
+bindkey '^x^e' vim-command-line
+
 # navigation
 setopt autocd
 

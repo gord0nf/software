@@ -4,7 +4,12 @@
   "ipc": true,
   "layer": "top",
   "position": "top",
-  "modules-left": ["sway/workspaces", "custom/right-arrow-dark"],
+  "modules-left": [
+    "sway/workspaces",
+    "custom/right-arrow-dark",
+    "idle_inhibitor",
+    "sway/mode"
+  ],
   "modules-center": [
     "custom/left-arrow-dark",
     "clock#1",
@@ -35,6 +40,13 @@
     "custom/left-arrow-dark",
     "tray",
   ],
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "",
+      "deactivated": ""
+    }
+  },
   "custom/left-arrow-dark": {
     "format": "",
     "tooltip": false,
@@ -73,7 +85,10 @@
     "format-muted": "MUTE",
     "format-icons": {
       "headphones": "",
-      "default": ["", ""],
+      "default": [
+        "",
+        ""
+      ],
     },
     "scroll-step": 5,
     "on-click": "pamixer -t",
@@ -94,7 +109,14 @@
       "critical": 15,
     },
     "format": "{icon} {capacity}%",
-    "format-icons": ["", "", "", "", ""],
+    "format-charging": " {capacity}%",
+    "format-icons": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
   },
   "disk": {
     "interval": 5,

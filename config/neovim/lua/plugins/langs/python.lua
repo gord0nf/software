@@ -8,6 +8,6 @@ return {
     'rst',
   },
   formatters_by_ft = {
-    python = { 'autopep8' },
+    python = { 'black' },
   },
 }

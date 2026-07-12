@@ -1,3 +1,3 @@
 #!/bin/bash
 
-${APT:-apt} install -y fdisk htop
+${APT:-apt} install -y fdisk btop

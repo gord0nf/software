@@ -3,7 +3,7 @@
 if command -v swaybg &>/dev/null; then
 
   wallpaper_dir=${WALLPAPERS:-$HOME/.local/share/wallpapers}/$1
-  [[ -f "$1" ]] && wallpaper=$1 || wallpaper=$(find "$wallpaper_dir" -type f | shuf -n 1)
+  [[ -f "$1" ]] && wallpaper=$1 || wallpaper=$(find "$wallpaper_dir" -type f | shuf -n 1 --random-source=/dev/urandom)
   wallpaper=$(realpath "$wallpaper")
 
   if [[ -f "$wallpaper" ]]; then
